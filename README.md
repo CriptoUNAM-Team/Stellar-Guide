@@ -9,6 +9,16 @@ Guía visual y práctica para aprender **Stellar + Soroban** desde cero, con rut
 ![Node.js](https://img.shields.io/badge/Node.js-Tooling-16A34A?style=for-the-badge&logo=node.js&logoColor=white)
 ![Mermaid](https://img.shields.io/badge/Mermaid-Flows-06B6D4?style=for-the-badge&logo=mermaid&logoColor=white)
 
+## Empieza aquí
+
+Guía práctica para aprender haciendo: pagos, contratos e integraciones en Stellar.
+
+## Requisitos mínimos
+
+- Terminal básica.
+- Ganas de probar cosas.
+- JS o Rust ayudan, pero no son obligatorios para arrancar.
+
 ## Mapa rápido
 
 ```mermaid
@@ -20,6 +30,14 @@ flowchart LR
   integrations --> playbooks["5. Playbooks E2E"]
   playbooks --> release["6. Checklist pre-mainnet"]
 ```
+
+## Mini glosario
+
+- **Stellar**: red para pagos y activos digitales.
+- **Soroban**: plataforma de smart contracts en Stellar.
+- **Testnet**: red de pruebas (sin dinero real).
+- **SEP**: estándares para que wallets/proveedores se entiendan entre sí.
+- **Adapter**: capa que conecta tu app con un proveedor externo.
 
 ## Guía concentrada (todo en un solo lugar)
 
@@ -157,6 +175,12 @@ stellar tx new payment \
   --asset native \
   --amount 100
 ```
+
+## Retos para practicar
+
+1. Cambia montos y vuelve a correr `payroll` y `savings`.
+2. Modifica un adapter en `examples/integrations` para añadir un campo nuevo en `data`.
+3. Crea un mini flujo: ahorro (`savings`) + prueba (`zkproof`) y documenta tu resultado.
 
 ## Referencias clave del repo
 
