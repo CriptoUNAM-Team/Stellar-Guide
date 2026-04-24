@@ -1,0 +1,15 @@
+{
+  "name": "stellar-guide-integrations",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "smoke:soroswap": "node soroswap/demo.mjs",
+    "smoke:etherfuse": "node etherfuse/demo.mjs",
+    "smoke:defindex": "node defindex/demo.mjs",
+    "smoke:pollar": "node pollar/demo.mjs",
+    "smoke:zkproof": "node zkproof/demo.mjs",
+    "smoke:all": "node run-all-smokes.mjs"
+  }
+}

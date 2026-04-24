@@ -1,5 +1,10 @@
 # Comandos Básicos
 
+## Convenciones rápidas de este documento
+- Todas las recetas usan `testnet` por defecto.
+- Para montos en operaciones puedes ver valores en stroops (según comando/contexto de CLI); valida en la ayuda del comando antes de usar producción.
+- Usa aliases (`alice`, `bob`, `charlie`) para no exponer claves en comandos repetitivos.
+
 ## Stellar CLI (recetas y autocompletado)
 - Tareas típicas: enviar pagos, gestionar ciclo de vida de contratos, extender instancia/almacenamiento/wasm, y más (ver “Cookbook” del Stellar CLI).
 - Autocompletado:
@@ -21,6 +26,37 @@ stellar keys generate bob
 
 # Añadir una clave pública existente con alias
 stellar keys add --public-key G... charlie
+
+# Ver la llave pública (dirección) de una identidad
+stellar keys address alice
+
+# Ver la llave privada (secreta) de una identidad
+stellar keys secret alice
+```
+
+## Flujo 1: cuenta y pago en Testnet
+```bash
+# 1) Seleccionar red
+stellar network use testnet
+
+# 2) Crear cuenta fuente con fondos
+stellar keys generate --fund alice --network testnet
+
+# 3) Crear cuenta destino sin fondos iniciales
+stellar keys generate bob
+
+# 4) Crear cuenta en cadena (bob) desde alice
+stellar tx new create-account \
+  --source alice \
+  --destination bob \
+  --starting-balance 100_000_000
+
+# 5) Enviar pago nativo
+stellar tx new payment \
+  --source alice \
+  --destination bob \
+  --asset native \
+  --amount 10_000_000
 ```
 
 ## Fundear cuentas y pagos (tx)
@@ -37,6 +73,36 @@ stellar tx new payment \
   --destination charlie \
   --asset native \
   --amount 40_000_000
+```
+
+## Verificación del flujo de pago
+```bash
+# Revisar estado de alice
+stellar account show --id "$(stellar keys address alice)" --network testnet
+
+# Revisar estado de bob
+stellar account show --id "$(stellar keys address bob)" --network testnet
+```
+
+## Flujo 2: contrato Soroban en Testnet
+```bash
+# 1) Crear proyecto
+stellar contract init --name counter
+
+# 2) Compilar
+stellar contract build --manifest-path contracts/counter/Cargo.toml
+
+# 3) Desplegar
+stellar contract deploy \
+  --wasm target/wasm32-unknown-unknown/release/counter.wasm \
+  --network testnet \
+  --source alice
+
+# 4) Invocar función
+stellar contract invoke --id <CONTRACT_ID> \
+  --source alice \
+  --network testnet -- \
+  increment
 ```
 
 ## Contratos con Stellar CLI
@@ -63,6 +129,17 @@ Si deseas consultar balances/estado de una cuenta con Horizon:
 ```bash
 curl "https://horizon-testnet.stellar.org/accounts/<PUBLIC_KEY>"
 ```
+
+## Flujo 3: integración con anclas y SEP (mapa de decisión)
+No todos los proyectos necesitan los mismos estándares. Usa esta guía rápida:
+
+- Si necesitas **depósito/retiro simple**: revisa `SEP-6`.
+- Si necesitas **flujo interactivo web**: revisa `SEP-24`.
+- Si necesitas **autenticación wallet-anchor**: revisa `SEP-10`.
+- Si necesitas **KYC estructurado**: revisa `SEP-12`.
+- Si necesitas **quotes previas**: revisa `SEP-38`.
+
+Referencia completa: [SEP, Estándares y Anclas](sep-estandares-anclas.md).
 
 ## SDK JS (snippet mínimo)
 ```js
