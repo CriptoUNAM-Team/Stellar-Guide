@@ -2,6 +2,13 @@
 
 Guía visual y práctica para aprender **Stellar + Soroban** desde cero, con rutas por perfil, contratos listos, integraciones reales y playbooks de producto.
 
+![Stellar](https://img.shields.io/badge/Stellar-Network-0A0F1F?style=for-the-badge&logo=stellar&logoColor=white)
+![Soroban](https://img.shields.io/badge/Soroban-Smart%20Contracts-4F46E5?style=for-the-badge)
+![Rust](https://img.shields.io/badge/Rust-Contracts-D97706?style=for-the-badge&logo=rust&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-Integrations-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111111)
+![Node.js](https://img.shields.io/badge/Node.js-Tooling-16A34A?style=for-the-badge&logo=node.js&logoColor=white)
+![Mermaid](https://img.shields.io/badge/Mermaid-Flows-06B6D4?style=for-the-badge&logo=mermaid&logoColor=white)
+
 ## Mapa rápido
 
 ```mermaid
@@ -9,12 +16,12 @@ flowchart LR
   start["0. Inicio"] --> docs["1. Fundamentos y CLI"]
   docs --> payments["2. Pagos en Testnet"]
   payments --> contracts["3. Contratos Soroban"]
-  contracts --> integrations["4. Integraciones (Soroswap/Etherfuse/Defindex/Pollar/ZK)"]
+  contracts --> integrations["4. Integraciones externas"]
   integrations --> playbooks["5. Playbooks E2E"]
   playbooks --> release["6. Checklist pre-mainnet"]
 ```
 
-## Qué encontrarás aquí
+## Guía concentrada (todo en un solo lugar)
 
 | Bloque | Qué resuelve | Dónde empezar |
 |---|---|---|
@@ -23,6 +30,38 @@ flowchart LR
 | Contratos | Casos de negocio en Soroban | [docs/contratos-casos-uso.md](docs/contratos-casos-uso.md) |
 | Integraciones | Conectar protocolos externos | [docs/integraciones-protocolos.md](docs/integraciones-protocolos.md) |
 | Operación | Hardening y salida a producción | [docs/checklist-pre-mainnet.md](docs/checklist-pre-mainnet.md) |
+
+## Stack y tecnologías
+
+| Área | Lenguajes/Tecnologías |
+|---|---|
+| Red y estándares | Stellar, SEP-1, SEP-6, SEP-10, SEP-12, SEP-24, SEP-31, SEP-38 |
+| Contratos | Soroban, Rust, WASM |
+| Integraciones | JavaScript (Node.js), Fetch API, adapters por proveedor |
+| DevEx | Stellar CLI, Cargo, Mermaid, Markdown |
+
+## Arquitectura del repositorio
+
+```mermaid
+flowchart LR
+  docs["docs/"] --> learn["Onboarding y referencia"]
+  exercises["exercises/"] --> practice["Práctica guiada"]
+  contracts["contracts/"] --> onchain["Lógica on-chain Soroban"]
+  integrations["examples/integrations/"] --> offchain["Adapters off-chain"]
+  onchain --> playbooks["Playbooks E2E"]
+  offchain --> playbooks
+  playbooks --> release["Checklist pre-mainnet"]
+```
+
+## Estructura del repositorio
+
+```text
+docs/                    Guías, estándares, playbooks, operación
+exercises/               Ejercicios prácticos
+contracts/               Contratos Soroban listos para compilar y testear
+examples/integrations/   Adapters y demos de integraciones externas
+assets/                  Recursos visuales
+```
 
 ## Rutas recomendadas (elige una)
 
@@ -46,16 +85,6 @@ flowchart LR
 3. `examples/integrations/*`
 4. [docs/playbooks-producto.md](docs/playbooks-producto.md)
 
-## Estructura del repositorio
-
-```text
-docs/                    Guías, estándares, playbooks, operación
-exercises/               Ejercicios prácticos
-contracts/               Contratos Soroban listos para compilar y testear
-examples/integrations/   Adapters y demos de integraciones externas
-assets/                  Recursos visuales
-```
-
 ## Contratos listos para practicar
 
 | Contrato | Caso de uso | Estado |
@@ -75,6 +104,34 @@ assets/                  Recursos visuales
 | Defindex | `examples/integrations/defindex` | `getApy`, `getBalance`, `deposit`, `withdraw` |
 | Pollar | `examples/integrations/pollar` | `createSession`, `getRampQuote` |
 | ZKProof | `examples/integrations/zkproof` | `generateProof`, `verifyLocal`, `verifyOnChainAttestation` |
+
+## Flujos Mermaid clave
+
+### Flujo 1: De dev local a demo funcional
+```mermaid
+flowchart LR
+  setup["Configurar entorno"] --> tests["Correr tests"]
+  tests --> contracts["Probar contratos Soroban"]
+  contracts --> adapters["Probar adapters en mock/real"]
+  adapters --> e2e["Ejecutar playbook E2E"]
+```
+
+### Flujo 2: Producto híbrido (on-chain + off-chain)
+```mermaid
+sequenceDiagram
+  participant User
+  participant App
+  participant Adapter
+  participant Contract
+  participant Stellar
+  User->>App: Solicita operación (ej. ahorro, swap, préstamo)
+  App->>Adapter: Cotiza/consulta proveedor externo
+  Adapter-->>App: Datos normalizados
+  App->>Contract: Invoca función Soroban
+  Contract->>Stellar: Ejecuta transacción
+  Stellar-->>App: Hash + estado
+  App-->>User: Resultado final
+```
 
 ## Quickstart (copiar y correr)
 
@@ -119,3 +176,7 @@ stellar tx new payment \
 ## Licencia
 
 MIT
+
+## Autor
+
+Hecho por **Gerry Vela**.
