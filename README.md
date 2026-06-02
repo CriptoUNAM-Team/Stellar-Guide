@@ -9,6 +9,18 @@ Guía visual y práctica para aprender **Stellar + Soroban** desde cero, con rut
 ![Node.js](https://img.shields.io/badge/Node.js-Tooling-16A34A?style=for-the-badge&logo=node.js&logoColor=white)
 ![Mermaid](https://img.shields.io/badge/Mermaid-Flows-06B6D4?style=for-the-badge&logo=mermaid&logoColor=white)
 
+## 🎓 Curso de 12 semanas (para impartir clases)
+
+¿Quieres dar un **curso completo** sobre Stellar? Hay una capa pedagógica lista para enseñar en
+[`course/`](course/README.md): syllabus, teoría (consenso SCP, arquitectura), plan de clase semana a
+semana, labs calificados, banco de quizzes, rúbricas y proyecto final.
+
+- **Programa completo:** [course/syllabus.md](course/syllabus.md)
+- **Mapa del curso:** [course/README.md](course/README.md)
+- **Teoría de consenso (SCP/FBA):** [course/teoria/02-consenso-scp.md](course/teoria/02-consenso-scp.md)
+
+El curso reutiliza los `docs/`, `contracts/` y `examples/` de este repo como material de laboratorio.
+
 ## Empieza aquí
 
 Guía práctica para aprender haciendo: pagos, contratos e integraciones en Stellar.
@@ -46,6 +58,7 @@ flowchart LR
 | Fundamentos | Cuentas, red, CLI y flujos base | [docs/introduccion.md](docs/introduccion.md) |
 | Pagos | Crear cuentas y enviar XLM | [exercises/01-pago-simple.md](exercises/01-pago-simple.md) |
 | Contratos | Casos de negocio en Soroban | [docs/contratos-casos-uso.md](docs/contratos-casos-uso.md) |
+| Frontend | Probar funciones de contrato desde UI | [docs/frontend-contratos.md](docs/frontend-contratos.md) |
 | Integraciones | Conectar protocolos externos | [docs/integraciones-protocolos.md](docs/integraciones-protocolos.md) |
 | Operación | Hardening y salida a producción | [docs/checklist-pre-mainnet.md](docs/checklist-pre-mainnet.md) |
 
@@ -123,6 +136,18 @@ assets/                  Recursos visuales
 | Pollar | `examples/integrations/pollar` | `createSession`, `getRampQuote` |
 | ZKProof | `examples/integrations/zkproof` | `generateProof`, `verifyLocal`, `verifyOnChainAttestation` |
 
+## Frontend para probar contratos
+
+Si quieres testear contratos desde UI (en vez de solo CLI), usa esta guía:
+
+- [docs/frontend-contratos.md](docs/frontend-contratos.md)
+
+Incluye:
+- estructura mínima de frontend,
+- setup de SDK,
+- ejemplo de invocación de contrato,
+- ejemplo de UI con botón de ejecución.
+
 ## Flujos Mermaid clave
 
 ### Flujo 1: De dev local a demo funcional
@@ -187,6 +212,7 @@ stellar tx new payment \
 - Guía principal: [docs/guia-0-a-builder.md](docs/guia-0-a-builder.md)
 - SEP y anclas: [docs/sep-estandares-anclas.md](docs/sep-estandares-anclas.md)
 - Integraciones: [docs/integraciones-protocolos.md](docs/integraciones-protocolos.md)
+- Frontend + contratos: [docs/frontend-contratos.md](docs/frontend-contratos.md)
 - Playbooks E2E: [docs/playbooks-producto.md](docs/playbooks-producto.md)
 - Checklist producción: [docs/checklist-pre-mainnet.md](docs/checklist-pre-mainnet.md)
 - Troubleshooting: [docs/troubleshooting-integraciones.md](docs/troubleshooting-integraciones.md)

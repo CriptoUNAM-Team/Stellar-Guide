@@ -35,6 +35,7 @@
 - End-to-end: cliente + contrato
 - Integraciones por proveedor: Defindex, Soroswap, Etherfuse, Pollar, ZKProof
 - Referencia: [Integraciones de Protocolos](integraciones-protocolos.md)
+- Frontend para invocar contratos: [Frontend para probar contratos Soroban](frontend-contratos.md)
 
 ## 5. Publicación
 - Checklist de revisión
