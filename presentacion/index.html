@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stellar · Construye el futuro financiero on-chain</title>
+<style>
+  :root{
+    --bg:#0E0D13;
+    --bg2:#15131D;
+    --ink:#F5F4FA;      /* blanco */
+    --muted:#A2A0B0;    /* gris */
+    --accent:#9B7BFF;   /* morado */
+    --accent2:#C4ABFF;  /* morado claro */
+    --gold:#FFD23F;     /* amarillo */
+    --gold-soft:#F6C94A;
+    --card:rgba(255,255,255,.035);
+    --line:rgba(255,255,255,.10);
+    --mono:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+
+  /* fondo: cuadrícula técnica que deriva lentamente */
+  .bg-grid{position:fixed;inset:-2px;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(155,123,255,.06) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(155,123,255,.06) 1px,transparent 1px);
+    background-size:56px 56px;
+    -webkit-mask-image:radial-gradient(ellipse 90% 80% at 50% 45%,#000 35%,transparent 88%);
+    mask-image:radial-gradient(ellipse 90% 80% at 50% 45%,#000 35%,transparent 88%);
+    animation:drift 26s linear infinite}
+  @keyframes drift{from{background-position:0 0,0 0}to{background-position:56px 56px,56px 56px}}
+  /* línea de luz que recorre la parte superior */
+  .bg-scan{position:fixed;top:0;left:0;right:0;height:1px;z-index:0;pointer-events:none;
+    background:rgba(255,210,63,.5);box-shadow:0 0 16px 1px rgba(255,210,63,.5);
+    opacity:0;animation:scan 9s ease-in-out infinite}
+  @keyframes scan{0%{transform:translateY(0);opacity:0}8%{opacity:.7}45%{opacity:.25}90%{opacity:0}100%{transform:translateY(100vh);opacity:0}}
+
+  .deck{position:relative;z-index:1;height:100vh;width:100vw}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+    padding:clamp(28px,6vw,90px);opacity:0}
+  .slide.active{display:flex;opacity:1;transition:opacity .35s ease}
+
+  /* entrada en cascada: cada bloque aparece en secuencia */
+  @keyframes rise{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:translateY(22px) scale(.96)}to{opacity:1;transform:none}}
+  .slide.active>*{animation:rise .6s cubic-bezier(.16,.84,.3,1) both}
+  .slide.active>*:nth-child(1){animation-delay:.05s}
+  .slide.active>*:nth-child(2){animation-delay:.13s}
+  .slide.active>*:nth-child(3){animation-delay:.21s}
+  .slide.active>*:nth-child(4){animation-delay:.29s}
+  .slide.active>*:nth-child(5){animation-delay:.37s}
+  .slide.active>*:nth-child(6){animation-delay:.45s}
+  .slide.active .card{animation:pop .55s cubic-bezier(.16,.84,.3,1) both}
+  .slide.active .card:nth-child(1){animation-delay:.20s}
+  .slide.active .card:nth-child(2){animation-delay:.28s}
+  .slide.active .card:nth-child(3){animation-delay:.36s}
+  .slide.active .card:nth-child(4){animation-delay:.44s}
+  .slide.active .card:nth-child(5){animation-delay:.52s}
+  .slide.active .card:nth-child(6){animation-delay:.60s}
+  .slide.active ul.clean li,.slide.active .step,.slide.active .t-row{animation:rise .55s cubic-bezier(.16,.84,.3,1) both}
+  .slide.active ul.clean li:nth-child(1),.slide.active .step:nth-child(1),.slide.active .t-row:nth-child(1){animation-delay:.24s}
+  .slide.active ul.clean li:nth-child(2),.slide.active .step:nth-child(2),.slide.active .t-row:nth-child(2){animation-delay:.32s}
+  .slide.active ul.clean li:nth-child(3),.slide.active .step:nth-child(3),.slide.active .t-row:nth-child(3){animation-delay:.40s}
+  .slide.active ul.clean li:nth-child(4),.slide.active .step:nth-child(4),.slide.active .t-row:nth-child(4){animation-delay:.48s}
+  .slide.active ul.clean li:nth-child(5),.slide.active .step:nth-child(5),.slide.active .t-row:nth-child(5){animation-delay:.56s}
+  @media(prefers-reduced-motion:reduce){.slide.active>*,.slide.active .card,.slide.active ul.clean li,.slide.active .step,.slide.active .t-row{animation:none}}
+
+  .kicker{font-size:clamp(12px,1.4vw,16px);letter-spacing:.32em;text-transform:uppercase;color:var(--gold);
+    font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:12px}
+  .kicker::before{content:"";width:34px;height:2px;background:var(--gold);border-radius:2px}
+  h1{font-size:clamp(40px,7.5vw,104px);line-height:1.02;font-weight:800;letter-spacing:-.03em}
+  h2{font-size:clamp(30px,5vw,60px);line-height:1.05;font-weight:800;letter-spacing:-.02em;margin-bottom:22px}
+  h3{font-size:clamp(18px,2.2vw,26px);font-weight:700;margin-bottom:8px}
+  .lead{font-size:clamp(17px,2.2vw,27px);color:var(--muted);max-width:62ch;line-height:1.5;margin-top:14px}
+  .grad{color:var(--gold)}
+  p{font-size:clamp(15px,1.8vw,21px);color:var(--muted);line-height:1.55}
+  strong{color:var(--ink);font-weight:700}
+  em{font-style:normal;color:var(--gold-soft);font-weight:600}
+  .em{color:var(--gold);font-weight:700}
+
+  .grid{display:grid;gap:clamp(14px,1.6vw,22px);margin-top:30px}
+  .g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+  .row{display:flex;gap:clamp(16px,2.4vw,40px);align-items:center;flex-wrap:wrap}
+  .col{flex:1;min-width:0}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:clamp(16px,1.8vw,26px);
+    backdrop-filter:blur(6px);transition:transform .3s,border-color .3s}
+  .card:hover{transform:translateY(-4px);border-color:rgba(155,123,255,.55)}
+  .card h3{font-size:clamp(16px,1.8vw,21px)}
+  .card p{font-size:clamp(13px,1.4vw,16px)}
+
+  .ico{display:inline-flex;margin-bottom:14px;color:var(--gold)}
+  .ico svg{width:30px;height:30px}
+  .ico.p{color:var(--accent2)}
+
+  .stat{font-size:clamp(34px,5vw,62px);font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--gold)}
+  .stat.v{color:var(--gold)}
+  .stat-l{color:var(--muted);font-size:clamp(13px,1.4vw,16px);margin-top:8px}
+
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;border:1px solid var(--line);
+    background:var(--card);font-size:clamp(12px,1.3vw,15px);color:var(--ink);font-weight:600}
+  .pill::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent)}
+  .pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+
+  pre{background:#08070D;border:1px solid var(--line);border-radius:16px;padding:clamp(16px,1.8vw,24px);overflow:auto;
+    font-family:var(--mono);font-size:clamp(12px,1.3vw,16px);line-height:1.7;box-shadow:0 30px 60px -20px rgba(0,0,0,.7)}
+  .win{display:flex;gap:7px;margin-bottom:14px}
+  .win i{width:12px;height:12px;border-radius:50%;display:inline-block}
+  .win i:nth-child(1){background:#5b5566}.win i:nth-child(2){background:#7a7286}.win i:nth-child(3){background:#9B7BFF}
+  code{font-family:var(--mono)}
+  /* sintaxis: morado/amarillo/gris/blanco */
+  .k{color:#C4ABFF}      /* keywords */
+  .f{color:#FFD23F}      /* funciones */
+  .s{color:#CDA8FF}      /* strings */
+  .c{color:#6A6678;font-style:italic} /* comentarios */
+  .n{color:#FFE08A}      /* números */
+  .t{color:#E7DEFF}      /* tipos */
+  .a{color:#9B7BFF}      /* atributos/macros */
+
+  .t-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+  .t-row:last-child{border:0}
+  .t-row .l{font-weight:700;color:var(--ink);font-size:clamp(15px,1.7vw,20px)}
+  .t-row .r{color:var(--muted);font-size:clamp(13px,1.5vw,18px);text-align:right}
+  .yes{color:var(--gold);font-weight:700}
+
+  .flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:24px}
+  .node{padding:13px 18px;border-radius:13px;border:1px solid var(--line);background:var(--card);font-weight:700;font-size:clamp(13px,1.5vw,18px)}
+  .node.hot{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 28px -8px var(--accent);animation:glow 2.8s ease-in-out infinite}
+  @keyframes glow{0%,100%{box-shadow:0 0 0 1px var(--accent),0 0 22px -12px var(--accent)}50%{box-shadow:0 0 0 1px var(--accent),0 0 36px -4px var(--accent)}}
+  .arrow{color:var(--gold);font-size:20px;font-family:var(--mono)}
+
+  ul.clean{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:13px}
+  ul.clean li{display:flex;gap:14px;align-items:flex-start;font-size:clamp(14px,1.7vw,20px);color:var(--muted)}
+  ul.clean li b{color:var(--ink)}
+  ul.clean li::before{content:"";flex:none;width:9px;height:9px;margin-top:9px;border-radius:3px;background:var(--accent)}
+
+  .big-num{font-family:var(--mono);font-size:clamp(22px,2.6vw,34px);color:var(--accent2);font-weight:700}
+
+  /* pasos de comandos */
+  .steps{display:flex;flex-direction:column;gap:13px;margin-top:24px}
+  .step{display:flex;gap:18px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 20px}
+  .sn{flex:none;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;
+    background:rgba(155,123,255,.16);border:1px solid rgba(155,123,255,.5);color:var(--accent2);font-size:15px}
+  .step .body{min-width:0}
+  .cmd{display:block;font-family:var(--mono);color:var(--gold);font-size:clamp(13px,1.45vw,18px);margin-bottom:5px;word-break:break-word}
+  .step p{font-size:clamp(12px,1.35vw,15px)}
+  .step p code{color:var(--accent2)}
+
+  .logo-mark{font-size:clamp(60px,10vw,140px);line-height:1;color:var(--gold);filter:drop-shadow(0 0 40px rgba(155,123,255,.6));animation:floaty 4.5s ease-in-out infinite}
+  @keyframes floaty{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-12px) rotate(8deg)}}
+
+  .photo-wrap{flex:none;width:clamp(210px,26vw,330px);border-radius:22px;overflow:hidden;position:relative;
+    border:1px solid rgba(155,123,255,.55);
+    box-shadow:0 0 0 1px rgba(255,255,255,.05),0 28px 70px -24px rgba(155,123,255,.65);
+    animation:photoglow 4.5s ease-in-out infinite}
+  .photo-wrap img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:60% 30%}
+  @keyframes photoglow{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.05),0 24px 60px -28px rgba(155,123,255,.5)}
+    50%{box-shadow:0 0 0 1px rgba(255,255,255,.05),0 28px 80px -20px rgba(155,123,255,.8)}}
+
+  .chrome{position:fixed;z-index:5;left:0;right:0;bottom:0;height:6px;background:rgba(255,255,255,.06)}
+  .bar{height:100%;width:0;background:var(--accent);transition:width .4s ease}
+  .hud{position:fixed;z-index:5;bottom:22px;right:26px;display:flex;align-items:center;gap:14px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+  .hud button{background:var(--card);border:1px solid var(--line);color:var(--ink);width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:16px;transition:.2s}
+  .hud button:hover{border-color:var(--accent);background:rgba(155,123,255,.15)}
+  .brand{position:fixed;z-index:5;bottom:22px;left:26px;font-family:var(--mono);font-size:13px;color:var(--muted);letter-spacing:.1em}
+  .brand b{color:var(--gold)}
+  .hint{position:fixed;z-index:5;top:22px;right:26px;font-family:var(--mono);font-size:12px;color:rgba(162,160,176,.6)}
+  .notes{position:fixed;z-index:6;left:0;right:0;bottom:60px;max-height:38vh;overflow:auto;background:rgba(8,7,13,.97);
+    border-top:1px solid var(--line);padding:22px 40px;display:none;font-size:15px;color:var(--muted);line-height:1.6}
+  .notes.show{display:block}.notes b{color:var(--gold)}
+  @media(max-width:760px){.g2,.g3,.g4{grid-template-columns:1fr}.row{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div><div class="bg-scan"></div>
+
+<div class="deck" id="deck">
+
+  <!-- 1 COVER -->
+  <section class="slide" data-notes="Bienvenida. Calibra la sala: ¿quién programa, quién ha tocado blockchain, quién ha enviado una remesa? El objetivo de hoy: que salgan sabiendo qué es Stellar y entendiendo, línea por línea, cómo se construye un contrato.">
+    <div class="logo-mark">✦</div>
+    <div class="kicker">Onboarding para developers</div>
+    <h1>Construye el futuro<br><span class="grad">financiero on-chain</span></h1>
+    <p class="lead">Stellar + Soroban: pagos globales y contratos inteligentes en minutos, no en meses. De cero a tu primer contrato, entendiendo cada línea.</p>
+    <div class="pills">
+      <span class="pill">Blockchain</span>
+      <span class="pill">Rust / WASM</span>
+      <span class="pill">AI aplicada</span>
+      <span class="pill">Finanzas</span>
+      <span class="pill">Industria local</span>
+    </div>
+  </section>
+
+  <!-- 1b PRESENTER -->
+  <section class="slide" data-notes="Preséntate en 60 segundos. Conecta tus dos mundos: economista (entiendes el problema del dinero) y programador/blockchain (sabes construir la solución). Menciona las comunidades universitarias que fundaste y las startups: eso te da credibilidad y muestra que esto se puede convertir en proyecto real. Cierra invitándolos a construir contigo.">
+    <div class="kicker">Quién te acompaña hoy</div>
+    <div class="row" style="gap:clamp(24px,4vw,56px)">
+      <div class="photo-wrap"><img src="../public/1gerryP.jpg" alt="Gerardo Pedrizco"></div>
+      <div class="col">
+        <h2 style="margin-bottom:6px">Gerardo <span class="grad">Pedrizco</span></h2>
+        <p class="lead" style="margin-top:4px">Economista y programador. Desarrollador blockchain — donde las finanzas y el código se encuentran.</p>
+        <div class="pills">
+          <span class="pill">Economista</span>
+          <span class="pill">Programador</span>
+          <span class="pill">Desarrollador blockchain</span>
+          <span class="pill">Fundador de comunidades universitarias</span>
+          <span class="pill">Tallerista</span>
+          <span class="pill">Fundador de startups tecnológicas</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 AGENDA -->
+  <section class="slide" data-notes="Mapa del día. No es una clase pasiva: cada bloque termina con algo que pueden tocar. Vamos a ritmo de gente que ya programa.">
+    <div class="kicker">El plan de hoy</div>
+    <h2>De usuario a <span class="grad">builder</span> en una sesión</h2>
+    <div class="grid g4">
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg></span><h3>1 · Por qué</h3><p>El problema que Stellar resuelve y por qué te debería importar.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></svg></span><h3>2 · Cómo funciona</h3><p>Red, consenso SCP, cuentas y activos. Sin humo.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span><h3>3 · Soroban</h3><p>Tu primer smart contract en Rust, explicado línea por línea.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M11 8l4 4-4 4M8 12h7"/></svg></span><h3>4 · Tu turno</h3><p>AI aplicada, casos de industria y la ruta para seguir solo.</p></div>
+    </div>
+  </section>
+
+  <!-- 3 PROBLEM -->
+  <section class="slide" data-notes="Aterriza el dolor antes de la solución. Dato histórico para contar: en 1971 (no 1975) EE.UU. cierra la convertibilidad del dólar a oro (Nixon shock) y pasamos al dinero fiat; en 1973 nace SWIFT, los 'rieles' de mensajería que la banca AÚN usa para mover dinero entre países. Por eso una transferencia internacional todavía tarda días y cuesta caro: viaja sobre infraestructura de los años 70. Hoy: remesas caras, liquidación lenta, gente sin cuenta. Mientras un mensaje cruza el planeta en milisegundos.">
+    <div class="kicker">El problema</div>
+    <h2>El dinero se mueve sobre <span class="grad">rieles de los años 70</span></h2>
+    <div class="grid g3">
+      <div class="card"><div class="stat">6.2%</div><div class="stat-l">comisión promedio por enviar una remesa a LatAm</div></div>
+      <div class="card"><div class="stat">1–5 días</div><div class="stat-l">para que una transferencia internacional liquide</div></div>
+      <div class="card"><div class="stat">~1,400 M</div><div class="stat-l">de personas sin acceso a servicios bancarios</div></div>
+    </div>
+    <p class="lead" style="margin-top:30px">La banca global aún liquida sobre <strong>SWIFT (1973)</strong> y bancos corresponsales. Un mensaje cruza el planeta en milisegundos — <strong>¿por qué el dinero no?</strong></p>
+  </section>
+
+  <!-- 4 WHAT IS STELLAR -->
+  <section class="slide" data-notes="Definición simple: Stellar es una red abierta para mover y emitir valor. Nació en 2014 con foco en pagos e inclusión financiera. Bitcoin = oro digital; Ethereum = computadora mundial; Stellar = el riel de pagos.">
+    <div class="kicker">¿Qué es Stellar?</div>
+    <h2>Una red abierta para <span class="grad">mover y emitir valor</span></h2>
+    <div class="row">
+      <div class="col">
+        <ul class="clean">
+          <li><div><b>Pagos primero.</b> Nació en 2014 con un objetivo: dinero rápido, barato y global.</div></li>
+          <li><div><b>Cualquier activo.</b> XLM, USDC, pesos tokenizados, bonos… todo vive en la misma red.</div></li>
+          <li><div><b>Abierta y pública.</b> Cualquiera emite, paga o construye encima. Sin pedir permiso.</div></li>
+          <li><div><b>Con contratos.</b> Desde <b>Soroban</b>, lógica programable en Rust sobre esos pagos.</div></li>
+        </ul>
+      </div>
+      <div class="col">
+        <div class="grid g2">
+          <div class="card"><div class="stat v">3–5 s</div><div class="stat-l">en confirmar una transacción</div></div>
+          <div class="card"><div class="stat v">~$0.00001</div><div class="stat-l">costo por operación</div></div>
+          <div class="card"><div class="stat v">+180</div><div class="stat-l">países con on/off-ramps</div></div>
+          <div class="card"><div class="stat v">0</div><div class="stat-l">minería: no quema energía</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 VS OTHERS -->
+  <section class="slide" data-notes="Sin pelearte con otras cadenas: cada una tiene su lugar. El punto: Stellar optimiza para pagos. Sin proof-of-work, sin gas wars, finalidad en segundos. Por eso es ideal para fintech e industria local.">
+    <div class="kicker">¿En qué se diferencia?</div>
+    <h2>No todas las cadenas <span class="grad">resuelven lo mismo</span></h2>
+    <div class="card" style="margin-top:10px">
+      <div class="t-row"><div class="l">Bitcoin</div><div class="r">Reserva de valor · “oro digital” · ~10 min por bloque</div></div>
+      <div class="t-row"><div class="l">Ethereum</div><div class="r">Computadora mundial · muy flexible · costo de gas variable</div></div>
+      <div class="t-row"><div class="l">Stellar</div><div class="r"><span class="yes">Pagos + activos</span> · finalidad 3–5 s · fees fijos ínfimos · consenso SCP</div></div>
+    </div>
+    <p class="lead" style="margin-top:26px">Stellar no busca ser “todo para todos”: está afinada para <strong>mover dinero del mundo real</strong>.</p>
+  </section>
+
+  <!-- 6 SCP CONSENSUS -->
+  <section class="slide" data-notes="Concepto clave: SCP (Stellar Consensus Protocol), un Federated Byzantine Agreement. En vez de gastar energía (PoW) o apostar tokens (PoS), cada nodo elige en quién confía (quorum slice) y la red converge. Rápido, barato, sin minería. Da la intuición, no las mates.">
+    <div class="kicker">El motor: consenso SCP</div>
+    <h2>Sin minería. Sin <span class="grad">apostar</span>. Solo <span class="grad">confianza</span>.</h2>
+    <div class="row">
+      <div class="col">
+        <p class="lead">En Bitcoin ganas el derecho a escribir <em>quemando energía</em>. En Stellar, cada nodo elige <strong>en quién confía</strong> (su <em>quorum slice</em>) y la red converge en acuerdo en segundos.</p>
+        <div class="pills">
+          <span class="pill">Rápido</span>
+          <span class="pill">Bajo consumo</span>
+          <span class="pill">Abierto</span>
+          <span class="pill">Federated Byzantine Agreement</span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="flow" style="justify-content:center"><div class="node hot">Nodo A</div><span class="arrow">&#8644;</span><div class="node">Nodo B</div></div>
+        <div class="flow" style="justify-content:center"><span class="arrow">&#8597;</span><span style="width:46px"></span><span class="arrow">&#8597;</span></div>
+        <div class="flow" style="justify-content:center"><div class="node">Nodo C</div><span class="arrow">&#8644;</span><div class="node hot">Nodo D</div></div>
+        <p style="text-align:center;margin-top:18px;font-size:15px">Los nodos eligen sus quórums &rarr; la red acuerda &rarr; <span class="em">ledger cerrado en ~5 s</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 ANATOMY -->
+  <section class="slide" data-notes="Vocabulario mínimo. Cuenta = par de llaves (G pública, S secreta). Asset = nativo XLM o emitido. Ledger = estado global, se cierra cada ~5s. Operación = la acción. Transacción = operaciones firmadas. Testnet = red de práctica gratis.">
+    <div class="kicker">Anatomía de la red</div>
+    <h2>Seis piezas y ya <span class="grad">hablas Stellar</span></h2>
+    <div class="grid g3">
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="14" r="4"/><line x1="10.8" y1="11.2" x2="20" y2="2"/><line x1="17" y1="5" x2="20" y2="8"/><line x1="14" y1="8" x2="17" y2="11"/></svg></span><h3>Cuenta</h3><p>Par de llaves. Pública <code>G…</code> = tu IBAN. Secreta <code>S…</code> = tu firma. Nunca la compartas.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M15 9a3 3 0 0 0-3-1.5c-1.7 0-3 .9-3 2.2 0 1.3 1.3 2 3 2.3s3 1 3 2.3-1.3 2.2-3 2.2A3 3 0 0 1 9 15"/></svg></span><h3>Asset</h3><p>El nativo es <b>XLM</b>. O cualquier token emitido: USDC, un peso, un bono.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><h3>Ledger</h3><p>El estado global. Se cierra cada ~5 s. La “foto” compartida de todos los saldos.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg></span><h3>Operación</h3><p>La acción: pagar, crear cuenta, cambiar activo. La unidad mínima.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7l8.7 5 8.7-5M12 22V12"/></svg></span><h3>Transacción</h3><p>Una o varias operaciones, firmadas con tu llave secreta y enviadas a la red.</p></div>
+      <div class="card" style="border-color:rgba(255,210,63,.35)"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5.5 9.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3"/><path d="M7 15h10"/></svg></span><h3>Testnet</h3><p>Red de pruebas con dinero falso e ilimitado. <b>Aquí practicas todo gratis.</b></p></div>
+    </div>
+  </section>
+
+  <!-- 8 SOROBAN -->
+  <section class="slide" data-notes="Soroban: plataforma de smart contracts de Stellar. Escribes en Rust, compila a WASM, corre on-chain de forma determinista. Rust por seguridad de memoria y performance — crítico cuando manejas dinero.">
+    <div class="kicker">Smart contracts</div>
+    <h2>Soroban: lógica programable <span class="grad">en Rust</span></h2>
+    <div class="row">
+      <div class="col">
+        <ul class="clean">
+          <li><div><b>Escribes en Rust</b> — seguridad de memoria y velocidad, ideal para manejar dinero.</div></li>
+          <li><div><b>Compila a WASM</b> — un binario que la red ejecuta igual en todos los nodos.</div></li>
+          <li><div><b>Estado on-chain</b> — el contrato guarda datos (saldos, lotes, empleados) en el ledger.</div></li>
+          <li><div><b>SDK + CLI oficiales</b> — herramientas para compilar, desplegar y probar sin fricción.</div></li>
+        </ul>
+      </div>
+      <div class="col">
+        <div class="flow" style="flex-direction:column;align-items:stretch;gap:12px">
+          <div class="node hot" style="text-align:center">Rust &middot; <code>lib.rs</code></div>
+          <div style="text-align:center" class="arrow">&darr; &nbsp;<code>stellar contract build</code></div>
+          <div class="node" style="text-align:center">WASM (binario)</div>
+          <div style="text-align:center" class="arrow">&darr; &nbsp;<code>stellar contract deploy</code></div>
+          <div class="node hot" style="text-align:center">Contrato vivo on-chain</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 FIRST CONTRACT -->
+  <section class="slide" data-notes="El primer contrato: un contador. La idea clave es que un contrato Soroban es una struct de Rust marcada con macros. Recorre la columna derecha de arriba a abajo: no_std, contract, contractimpl, Env, storage, patrón leer-validar-escribir-devolver. Ese patrón se repite en TODO contrato.">
+    <div class="kicker">Tu primer contrato &middot; explicado</div>
+    <h2>Así se <span class="grad">declara</span> un contrato</h2>
+    <div class="row" style="align-items:stretch">
+      <div class="col" style="flex:1.25">
+        <pre><div class="win"><i></i><i></i><i></i></div><code><span class="c">// contracts/counter/src/lib.rs</span>
+<span class="a">#![no_std]</span>                       <span class="c">// 1 · sin std: binarios chicos para la red</span>
+<span class="k">use</span> soroban_sdk::{contract, contractimpl, Env, symbol_short, Symbol};
+
+<span class="a">#[contract]</span>                       <span class="c">// 2 · esta struct ES el contrato</span>
+<span class="k">pub struct</span> <span class="t">Counter</span>;
+
+<span class="a">#[contractimpl]</span>                   <span class="c">// 3 · expone los métodos como funciones públicas</span>
+<span class="k">impl</span> <span class="t">Counter</span> {
+    <span class="k">pub fn</span> <span class="f">increment</span>(env: <span class="t">Env</span>) -> <span class="t">u32</span> {     <span class="c">// 4 · env = acceso al ledger</span>
+        <span class="k">let</span> key: <span class="t">Symbol</span> = symbol_short!(<span class="s">"COUNT"</span>);  <span class="c">// 5 · la “casilla” del dato</span>
+        <span class="k">let mut</span> n: <span class="t">u32</span> = env.storage().instance()
+            .get(&key).unwrap_or(<span class="n">0</span>);             <span class="c">// 6 · LEE (0 si no existe)</span>
+        n += <span class="n">1</span>;                                    <span class="c">// 7 · tu regla de negocio</span>
+        env.storage().instance().set(&key, &n);     <span class="c">// 8 · ESCRIBE en el ledger</span>
+        n                                            <span class="c">// 9 · DEVUELVE el resultado</span>
+    }
+}</code></pre>
+      </div>
+      <div class="col">
+        <ul class="clean" style="margin-top:0">
+          <li><div><b>1 · <code>#![no_std]</code></b> — la red corre binarios mínimos, sin la librería estándar.</div></li>
+          <li><div><b>2 · <code>#[contract]</code></b> — marca la <em>struct</em> como el contrato en sí.</div></li>
+          <li><div><b>3 · <code>#[contractimpl]</code></b> — cada <code>pub fn</code> aquí se vuelve <em>invocable on-chain</em>.</div></li>
+          <li><div><b>4 · <code>Env</code></b> — tu puerta al ledger: almacenamiento, tiempo y eventos.</div></li>
+          <li><div><b>6→8 · storage</b> — es la base de datos del contrato: <em>get</em> para leer, <em>set</em> para guardar.</div></li>
+        </ul>
+        <p style="margin-top:16px"><span class="em">Todo contrato sigue el mismo patrón:</span> <strong>leer estado &rarr; aplicar reglas &rarr; guardar estado &rarr; responder.</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 INDUSTRY CONTRACT -->
+  <section class="slide" data-notes="Caso de industria de la transformación (manufactura): trazabilidad de un lote de producción. El contrato registra cada lote con folio, origen, fecha, control de calidad y quién lo certificó — todo inmutable. Recalca: misma estructura que el contador, solo cambian los DATOS y las REGLAS. Así se construye trazabilidad y certificación a prueba de fraude para exportación/maquila.">
+    <div class="kicker">Caso real &middot; industria de la transformación</div>
+    <h2>Trazabilidad de <span class="grad">manufactura</span>, on-chain</h2>
+    <div class="row" style="align-items:stretch">
+      <div class="col">
+        <pre><div class="win"><i></i><i></i><i></i></div><code><span class="c">// Lote de producción registrado en el ledger</span>
+<span class="a">#[contracttype]</span>                  <span class="c">// dato que vive on-chain</span>
+<span class="k">pub struct</span> <span class="t">Batch</span> {
+    <span class="k">pub</span> id: <span class="t">u64</span>,            <span class="c">// folio único del lote</span>
+    <span class="k">pub</span> producer: <span class="t">Address</span>,  <span class="c">// quién lo fabricó</span>
+    <span class="k">pub</span> product: <span class="t">Symbol</span>,    <span class="c">// qué producto es</span>
+    <span class="k">pub</span> quantity: <span class="t">u32</span>,      <span class="c">// unidades producidas</span>
+    <span class="k">pub</span> created_at: <span class="t">u64</span>,    <span class="c">// sello de tiempo del ledger</span>
+    <span class="k">pub</span> quality_ok: <span class="t">bool</span>,   <span class="c">// ¿pasó control de calidad?</span>
+    <span class="k">pub</span> certifier: <span class="t">Address</span>, <span class="c">// quién firmó la certificación</span>
+}</code></pre>
+      </div>
+      <div class="col">
+        <ul class="clean" style="margin-top:0">
+          <li><div>Cada lote queda registrado con <b>folio, origen y fecha</b> — imposible de alterar después.</div></li>
+          <li><div>Calidad <b>firma on-chain</b>: el certificado no se puede falsificar ni “editar”.</div></li>
+          <li><div>El cliente o la aduana <b>verifican</b> origen y calidad con solo el folio.</div></li>
+          <li><div>El pago al proveedor puede <b>liberarse solo</b> cuando el lote pasa calidad.</div></li>
+        </ul>
+        <p style="margin-top:16px"><span class="em">Misma estructura que el contador</span> — solo cambian los datos y las reglas. En el repo hay además contratos de <strong>nómina, ahorro, préstamos, yield y certificados NFT</strong>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 COMMANDS -->
+  <section class="slide" data-notes="Demo de comandos. Explica cada uno para que cualquiera lo pueda correr: qué hace, qué reemplazar y qué esperar de salida. Si puedes, hazlo en vivo: el paso 1 fondea una cuenta de prueba en segundos.">
+    <div class="kicker">Manos a la obra</div>
+    <h2>De 0 a corriendo en <span class="grad">5 pasos</span></h2>
+    <div class="steps">
+      <div class="step"><span class="sn">0</span><div class="body"><span class="cmd">brew install stellar-cli</span><p>Instala la CLI oficial (en Linux/Windows usa el instalador de su web). Verifica con <code>stellar --version</code>.</p></div></div>
+      <div class="step"><span class="sn">1</span><div class="body"><span class="cmd">stellar keys generate alice --network testnet --fund</span><p>Crea una identidad llamada <code>alice</code> en la red de pruebas y le deposita XLM falso gratis. Cambia <code>alice</code> por el nombre que quieras.</p></div></div>
+      <div class="step"><span class="sn">2</span><div class="body"><span class="cmd">stellar contract build</span><p>Córrelo <b>dentro de la carpeta del contrato</b>. Compila tu Rust a WASM en <code>target/wasm32.../</code>.</p></div></div>
+      <div class="step"><span class="sn">3</span><div class="body"><span class="cmd">stellar contract deploy --wasm ruta/al/contrato.wasm --source alice --network testnet</span><p>Sube el contrato a la red. Devuelve un <b>ID que empieza con <code>C…</code></b>: cópialo, lo usas en el paso 4.</p></div></div>
+      <div class="step"><span class="sn">4</span><div class="body"><span class="cmd">stellar contract invoke --id C… --source alice --network testnet -- increment</span><p>Llama a una función del contrato. Reemplaza <code>C…</code> por el ID del paso 3; lo que va después de <code>--</code> es el método. La salida es el valor devuelto.</p></div></div>
+    </div>
+  </section>
+
+  <!-- 12 AI + BLOCKCHAIN -->
+  <section class="slide" data-notes="Conecta con AI de forma seria. Tres ángulos reales: (1) usar herramientas de AI como copilotos para escribir y AUDITAR contratos más rápido; (2) agentes con wallet que ejecutan y liquidan pagos de forma autónoma y verificable; (3) IA que alimenta contratos con datos del mundo real vía oráculos. AI razona, blockchain ejecuta y liquida con confianza.">
+    <div class="kicker">El cruce que viene</div>
+    <h2>AI <span class="grad">razona</span>. Blockchain <span class="grad">ejecuta</span>.</h2>
+    <div class="grid g3">
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg></span><h3>AI como copiloto</h3><p>Ayúdate de herramientas de AI para <b>escribir y auditar</b> contratos Soroban más rápido y con menos errores.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><path d="M21 7H6a2 2 0 0 0 0 8h15z"/><circle cx="16" cy="11" r="1.2"/></svg></span><h3>Agentes con wallet</h3><p>Un agente de IA que <b>paga, cobra y liquida</b> micropagos por API: autónomo y verificable.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6a10 10 0 0 0 0 12M19 6a10 10 0 0 1 0 12M8 9a5 5 0 0 0 0 6M16 9a5 5 0 0 1 0 6"/><circle cx="12" cy="12" r="1.6"/></svg></span><h3>Datos y oráculos</h3><p>IA que alimenta contratos con datos del mundo real: precios, riesgo, identidad (ZK).</p></div>
+    </div>
+    <p class="lead" style="margin-top:30px">La IA es brillante, pero no tiene memoria de confianza. La blockchain le da <strong>liquidación, propiedad y reglas que no se pueden romper.</strong></p>
+  </section>
+
+  <!-- 13 LOCAL INDUSTRY -->
+  <section class="slide" data-notes="El momento de enganchar: baja todo a su realidad. Cada caso mapea a un contrato real del repo. Remesas = pagos. Nómina = payroll. Ahorro/tandas = savings. Microcréditos = loan. Certificados/diplomas = nft-membership. Pídeles que piensen en su propia industria o ciudad.">
+    <div class="kicker">Tu ciudad, on-chain</div>
+    <h2>Resuelve <span class="grad">problemas locales reales</span></h2>
+    <div class="grid g3">
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg></span><h3>Remesas justas</h3><p>Enviar dinero a casa por centavos, en segundos. <b>Sin perder 6% en comisiones.</b></p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h5"/></svg></span><h3>Nómina automática</h3><p>Dispersa salarios a todo el equipo en un paso &rarr; <code>contracts/payroll</code></p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></span><h3>Tandas / ahorro</h3><p>La tanda del barrio, pero transparente y a prueba de fraude &rarr; <code>contracts/savings</code></p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M15 9a3 3 0 0 0-3-1.5c-1.7 0-3 .9-3 2.2 0 1.3 1.3 2 3 2.3s3 1 3 2.3-1.3 2.2-3 2.2A3 3 0 0 1 9 15"/></svg></span><h3>Microcréditos</h3><p>Préstamos colateralizados para PyMEs sin banca &rarr; <code>contracts/loan</code></p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.2 13 7 22l5-3 5 3-1.2-9"/></svg></span><h3>Certificados</h3><p>Diplomas y membresías imposibles de falsificar &rarr; <code>contracts/nft-membership</code></p></div>
+      <div class="card" style="border-color:rgba(255,210,63,.35)"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.8c.6.5 1 1.2 1 2.2h6c0-1 .4-1.7 1-2.2A7 7 0 0 0 12 2z"/></svg></span><h3>¿Tu idea?</h3><p>Piensa un dolor de tu industria. Probablemente cabe en un contrato.</p></div>
+    </div>
+  </section>
+
+  <!-- 14 INTEGRATIONS -->
+  <section class="slide" data-notes="No estás solo: hay un ecosistema de protocolos para conectar. Soroswap (swaps/DEX), Etherfuse (stablebonds, bonos de gobierno tokenizados LatAm), Defindex (yield/APY), ZKProof (identidad privada). El repo trae adapters listos en modo mock. Construyes producto, no plomería.">
+    <div class="kicker">No partes de cero</div>
+    <h2>Un ecosistema <span class="grad">listo para conectar</span></h2>
+    <div class="grid g4">
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span><h3>Soroswap</h3><p>Intercambio de activos (DEX). <code>quote · execute</code></p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10l9-6 9 6"/><path d="M5 10v11M19 10v11M9.5 10v11M14.5 10v11"/></svg></span><h3>Etherfuse</h3><p>Stablebonds: bonos de gobierno tokenizados, LatAm.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3.5-3.5 3 3L21 6"/></svg></span><h3>Defindex</h3><p>Rendimiento automatizado. <code>getApy · deposit</code></p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.2 8 11 4.6-2.8 8-6 8-11V5z"/><path d="M9 12l2 2 4-4"/></svg></span><h3>ZKProof</h3><p>Prueba identidad sin revelar datos.</p></div>
+    </div>
+    <p class="lead" style="margin-top:28px">El repo ya trae <strong>adapters en modo mock</strong> para cada uno. Tú construyes el producto, no la fontanería.</p>
+  </section>
+
+  <!-- 15 ROADMAP -->
+  <section class="slide" data-notes="Cómo seguir. El repo tiene tres rutas y un curso de 12 semanas con teoría, labs y proyecto final. Diles por dónde empezar según su perfil. Meta de la primera semana: un pago en testnet y un contrato desplegado.">
+    <div class="kicker">Tu ruta</div>
+    <h2>Después de hoy, <span class="grad">¿por dónde sigo?</span></h2>
+    <div class="grid g3">
+      <div class="card"><div class="big-num">A</div><h3>Primer contacto</h3><p>90 min · instala la CLI, haz un pago en testnet, lee la introducción.</p></div>
+      <div class="card"><div class="big-num">B</div><h3>Builder de contratos</h3><p>Compila y prueba payroll, savings y loan. Rómpelos y arréglalos.</p></div>
+      <div class="card"><div class="big-num">C</div><h3>Integraciones</h3><p>Conecta Soroswap, Etherfuse o Defindex. Arma un mini-producto.</p></div>
+    </div>
+    <p class="lead" style="margin-top:28px">¿Quieres ir en serio? Hay un <strong>curso de 12 semanas</strong> con teoría, labs calificados y proyecto final en <code>course/</code>.</p>
+  </section>
+
+  <!-- 16 CTA -->
+  <section class="slide" data-notes="Cierre con energía y un reto concreto. Que se lleven una acción, no solo inspiración. Reto: clonar el repo, correr los tests de un contrato y cambiar una regla. Comparte el repo y tu contacto. Pregunta final: ¿qué problema de TU mundo resolverías primero?">
+    <div class="kicker">Tu turno</div>
+    <h1>El mejor momento<br>para construir es <span class="grad">ahora</span></h1>
+    <p class="lead">Clona el repo, corre los tests de un contrato y cámbiale una regla. Ese es tu primer paso como builder de Stellar.</p>
+    <div class="grid g3" style="margin-top:30px">
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7l8.7 5 8.7-5M12 22V12"/></svg></span><h3>El repo</h3><p>Guía, contratos e integraciones listos para correr.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5.5 9.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3"/><path d="M7 15h10"/></svg></span><h3>El reto</h3><p>Despliega un contrato en testnet antes del próximo encuentro.</p></div>
+      <div class="card"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-11.9 7.8L3 21l1.7-6.1A8.5 8.5 0 1 1 21 11.5z"/></svg></span><h3>La pregunta</h3><p>¿Qué problema de <b>tu</b> mundo resolverías primero?</p></div>
+    </div>
+    <p style="margin-top:30px;font-size:clamp(15px,1.7vw,20px)"><span class="em">✦ Stellar Guide</span> · hecho por Gerry Vela</p>
+  </section>
+
+</div>
+
+<div class="hint">&larr; &rarr; espacio &middot; <b>F</b> pantalla &middot; <b>N</b> notas</div>
+<div class="brand">✦ <b>STELLAR</b> · onboarding builders</div>
+<div class="hud"><button id="prev">&lsaquo;</button><span id="count">1 / 16</span><button id="next">&rsaquo;</button></div>
+<div class="chrome"><div class="bar" id="bar"></div></div>
+<div class="notes" id="notes"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let i = 0;
+  const bar = document.getElementById('bar');
+  const count = document.getElementById('count');
+  const notes = document.getElementById('notes');
+
+  function render(){
+    slides.forEach((s,n)=>s.classList.toggle('active', n===i));
+    bar.style.width = ((i+1)/slides.length*100)+'%';
+    count.textContent = (i+1)+' / '+slides.length;
+    if(notes.classList.contains('show')) notes.innerHTML = slides[i].dataset.notes || '<i>Sin notas.</i>';
+  }
+  function go(n){ i = Math.max(0, Math.min(slides.length-1, n)); render(); }
+  const next = ()=>go(i+1), prev = ()=>go(i-1);
+  document.getElementById('next').onclick = next;
+  document.getElementById('prev').onclick = prev;
+
+  document.addEventListener('keydown', e=>{
+    if(['ArrowRight','PageDown',' '].includes(e.key)){ e.preventDefault(); next(); }
+    else if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); prev(); }
+    else if(e.key==='Home'){ go(0); }
+    else if(e.key==='End'){ go(slides.length-1); }
+    else if(e.key.toLowerCase()==='f'){ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+    else if(e.key.toLowerCase()==='n'){ notes.classList.toggle('show'); render(); }
+  });
+
+  let x0=null;
+  addEventListener('touchstart',e=>x0=e.touches[0].clientX);
+  addEventListener('touchend',e=>{ if(x0===null)return; const dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>50)(dx<0?next:prev)(); x0=null; });
+
+  render();
+</script>
+</body>
+</html>
