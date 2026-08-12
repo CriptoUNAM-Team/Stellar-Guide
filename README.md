@@ -16,6 +16,7 @@ Guía visual y práctica para aprender **Stellar + Soroban** desde cero, con rut
 semana, labs calificados, banco de quizzes, rúbricas y proyecto final.
 
 - **Programa completo:** [course/syllabus.md](course/syllabus.md)
+- **Para docentes (cómo incorporarlo en clase):** [course/programa-docentes.md](course/programa-docentes.md)
 - **Mapa del curso:** [course/README.md](course/README.md)
 - **Teoría de consenso (SCP/FBA):** [course/teoria/02-consenso-scp.md](course/teoria/02-consenso-scp.md)
 

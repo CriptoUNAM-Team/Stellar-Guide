@@ -13,12 +13,13 @@ Hecho por **Gerry Vela** · Material de clase en español.
 
 ```text
 course/
-  README.md            ← estás aquí (mapa del curso)
-  syllabus.md          ← programa completo de 12 semanas, evaluación y calendario
-  teoria/              ← lecturas teóricas (consenso, arquitectura, comparativas)
-  weeks/               ← plan de clase semana por semana (semana-01..semana-12)
-  evaluacion/          ← rúbricas, banco de quizzes y especificación del proyecto final
-  recursos/            ← glosario, plantilla de slides y enlaces oficiales
+  README.md              ← estás aquí (mapa del curso)
+  programa-docentes.md   ← guía pedagógica para profesores (cómo incorporar en sus materias)
+  syllabus.md            ← programa completo de 12 semanas, evaluación y calendario
+  teoria/                ← lecturas teóricas (consenso, arquitectura, comparativas)
+  weeks/                 ← plan de clase semana por semana (semana-01..semana-12)
+  evaluacion/            ← rúbricas, banco de quizzes y especificación del proyecto final
+  recursos/              ← glosario, plantilla de slides y enlaces oficiales
 ```
 
 El curso **reutiliza el repo práctico existente** como material de laboratorio:
@@ -63,7 +64,15 @@ flowchart TB
 
 ---
 
-## Para el instructor (cómo usar este material)
+## Para profesores de Tecnología / Informática / Ingeniería
+
+Si vas a **incorporar este material en una materia existente** (no necesariamente un curso de 12 semanas), empieza por:
+
+**[programa-docentes.md](programa-docentes.md)** — formatos (cápsula 2–4 h, unidad 8–16 h, curso completo), mapa materia↔módulo, checklist del docente, evaluación reducida y proyectos por nivel.
+
+**Presentación para docentes:** [`../presentacion/docentes.html`](../presentacion/docentes.html) — slides listas para proyectar (notas con tecla **N**).
+
+## Para el instructor del curso intensivo (cómo usar este material)
 
 Cada archivo `weeks/semana-XX.md` está listo para impartir y contiene:
 
