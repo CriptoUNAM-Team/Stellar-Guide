@@ -18,10 +18,10 @@ Guía orientada a nuevos desarrolladores para pasar de "idea" a "MVP ejecutable"
 Permite prestar un activo (p. ej. USDC testnet) usando otro activo como colateral.
 
 ### Modelo mínimo
-- `create_position(borrower, collateral_amount)`
-- `borrow(position_id, debt_amount)`
-- `repay(position_id, amount)`
-- `liquidate(position_id)` si el ratio cae bajo umbral.
+- `create_position(borrower, collateral_amount)` transfiere colateral al contrato
+- `borrow(position_id, debt_amount)` / `repay(position_id, amount)` con transfers SAC
+- `liquidate(liquidator, position_id)` si el ratio cae bajo umbral
+- `set_min_collateral_bps` (admin) para demo de liquidación sin oráculo
 
 ### Datos clave on-chain
 - Colateral depositado por usuario.
@@ -155,6 +155,45 @@ Representa pertenencia, acceso o certificación on-chain.
 
 ---
 
+## 6) Campus: asistencia, votación, calificaciones
+
+Tres contratos pequeños para talleres con profesores. El alumno es una `Address`; el profesor es `admin`.
+
+### Asistencia (`contracts/attendance`)
+- `open_session(course, topic)`
+- `mark_present(session_id, student)` (no se puede marcar dos veces)
+- `attendance_count(student)`
+
+### Votación (`contracts/voting`)
+- `create_proposal(title)`
+- `vote(proposal_id, voter, support)` — un voto por address
+- `close_proposal` / `get_proposal`
+
+### Calificaciones (`contracts/grades`)
+- `record_grade(student, assignment, score, max_score)` — solo admin
+- `get_grade` — lectura pública
+
+## 7) AMM de producto constante (`contracts/amm`)
+
+Pool de dos SAC. `add_liquidity` y `swap_a_for_b` con `x * y = k` (sin fee). Sirve para mostrar precio implícito y slippage en el lab.
+
+## 8) Más campus: biblioteca, inscripción, depósito
+
+### Biblioteca (`contracts/library`)
+- `add_title(title, copies)`
+- `checkout` / `return_copy` (el alumno firma)
+- Un préstamo por alumno y título; `available` no baja de 0
+
+### Inscripción (`contracts/enrollment`)
+- `create_course(name, capacity)`
+- `enroll` / `drop_course`
+- Cupo lleno → `CourseFull`
+
+### Depósito condicional (`contracts/escrow`)
+- `lock(payer, payee, amount)` transfiere al contrato
+- El árbitro `release` al payee o `refund` al payer
+- Un trato cerrado no se mueve otra vez
+
 ## Estructura base para cualquier contrato
 
 1. **Roles**: admin, operador, usuario final.
@@ -183,6 +222,13 @@ Representa pertenencia, acceso o certificación on-chain.
 
 - `contracts/payroll`: dispersión de pagos por periodo (`disperse_period`) con protección contra doble ejecución.
 - `contracts/savings`: ahorro por metas con `unlock_time` y penalización por retiro anticipado (`penalty_bps`).
-- `contracts/loan`: préstamo colateralizado con control de sobre-endeudamiento por `min_collateral_bps`.
+- `contracts/loan`: préstamo colateralizado con transfers reales, LTV por `min_collateral_bps` y `liquidate`.
 - `contracts/yield`: bóveda de rendimiento por shares con `deposit`, `harvest` y `withdraw`.
+- `contracts/amm`: pool `x * y = k` (`add_liquidity`, `swap_a_for_b`).
 - `contracts/nft-membership`: emisión y transferencia básica de NFTs de membresía/certificados.
+- `contracts/attendance`: sesiones de clase y lista de asistencia por `Address`.
+- `contracts/voting`: propuestas sí/no, un voto por address, cierre y resultados.
+- `contracts/grades`: calificaciones por alumno/actividad; solo el admin escribe.
+- `contracts/library`: préstamo de ejemplares con cupo y devolución.
+- `contracts/enrollment`: inscripción a curso con `capacity`.
+- `contracts/escrow`: depósito condicional; el árbitro libera o reembolsa.

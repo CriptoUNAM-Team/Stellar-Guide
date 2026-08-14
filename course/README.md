@@ -28,7 +28,9 @@ El curso **reutiliza el repo práctico existente** como material de laboratorio:
 |---|---|
 | `docs/` | Lecturas de apoyo y referencia técnica |
 | `exercises/` | Labs guiados de pagos |
-| `contracts/` (payroll, savings, loan, yield, nft-membership, counter) | Labs de Soroban (Módulo 3) |
+| `contracts/` (campus, payroll, savings, loan, amm, yield, nft, food-trace) | Labs de Soroban (Módulo 3 y capacitación) |
+| `presentacion/` | Decks HTML (docentes + sesión 1) |
+| `docs/comandos-basicos.md` | Recetas CLI 25 (build / deploy / invoke) |
 | `examples/integrations/` | Labs de integraciones (Módulo 4) |
 
 ---

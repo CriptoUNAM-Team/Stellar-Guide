@@ -17,3 +17,5 @@ Bóveda simple de rendimiento por shares.
 cd contracts/yield
 make test
 ```
+
+Deploy e invoke: [docs/comandos-basicos.md](../../docs/comandos-basicos.md).

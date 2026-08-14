@@ -22,6 +22,13 @@ semana, labs calificados, banco de quizzes, rúbricas y proyecto final.
 
 El curso reutiliza los `docs/`, `contracts/` y `examples/` de este repo como material de laboratorio.
 
+**Presentaciones (HTML, tecla N = notas):**
+
+- Programa para docentes: [`presentacion/docentes.html`](presentacion/docentes.html)
+- Capacitación sesión 1 (teoría): [`presentacion/capacitacion-sesion-1.html`](presentacion/capacitacion-sesion-1.html)
+- Capacitación sesión 2 (CLI y contratos): [`presentacion/capacitacion-sesion-2.html`](presentacion/capacitacion-sesion-2.html)
+- Labs CLI / contratos: [`docs/comandos-basicos.md`](docs/comandos-basicos.md)
+
 ## Empieza aquí
 
 Guía práctica para aprender haciendo: pagos, contratos e integraciones en Stellar.
@@ -57,6 +64,7 @@ flowchart LR
 | Bloque | Qué resuelve | Dónde empezar |
 |---|---|---|
 | Fundamentos | Cuentas, red, CLI y flujos base | [docs/introduccion.md](docs/introduccion.md) |
+| CLI | Llaves, pagos, build/deploy/invoke (CLI 25) | [docs/comandos-basicos.md](docs/comandos-basicos.md) |
 | Pagos | Crear cuentas y enviar XLM | [exercises/01-pago-simple.md](exercises/01-pago-simple.md) |
 | Contratos | Casos de negocio en Soroban | [docs/contratos-casos-uso.md](docs/contratos-casos-uso.md) |
 | Frontend | Probar funciones de contrato desde UI | [docs/frontend-contratos.md](docs/frontend-contratos.md) |
@@ -88,9 +96,11 @@ flowchart LR
 ## Estructura del repositorio
 
 ```text
-docs/                    Guías, estándares, playbooks, operación
+docs/                    Guías, CLI, casos de uso, playbooks
 exercises/               Ejercicios prácticos
-contracts/               Contratos Soroban listos para compilar y testear
+contracts/               Contratos Soroban (campus, DeFi, nómina, trazabilidad)
+course/                  Syllabus 12 semanas + guía para docentes
+presentacion/            Decks HTML para proyectar
 examples/integrations/   Adapters y demos de integraciones externas
 assets/                  Recursos visuales
 ```
@@ -107,9 +117,9 @@ assets/                  Recursos visuales
 ### Ruta B: Builder de contratos
 1. [docs/guia-0-a-builder.md](docs/guia-0-a-builder.md)
 2. [docs/contratos-casos-uso.md](docs/contratos-casos-uso.md)
-3. `contracts/payroll`
-4. `contracts/savings`
-5. `contracts/loan`, `contracts/yield`, `contracts/nft-membership`
+3. [docs/comandos-basicos.md](docs/comandos-basicos.md) — build, deploy, invoke (CLI 25)
+4. Campus: `attendance` → `voting` → `grades` (sin tokens)
+5. Tokens: `escrow`, `payroll`, `loan`, `amm`, `yield`
 
 ### Ruta C: Integraciones y producto
 1. [docs/sep-estandares-anclas.md](docs/sep-estandares-anclas.md)
@@ -119,13 +129,30 @@ assets/                  Recursos visuales
 
 ## Contratos listos para practicar
 
-| Contrato | Caso de uso | Estado |
-|---|---|---|
-| `contracts/payroll` | Dispersión de nómina por periodo | Listo |
-| `contracts/savings` | Ahorro por metas con penalización temprana | Listo |
-| `contracts/loan` | Préstamo colateralizado base | Listo |
-| `contracts/yield` | Vault por shares (deposit/harvest/withdraw) | Listo |
-| `contracts/nft-membership` | NFT de membresía/certificado | Listo |
+Invoke y WASM (`wasm32v1-none`): [docs/comandos-basicos.md](docs/comandos-basicos.md).
+
+### Campus (talleres con profesores)
+
+| Contrato | Caso de uso |
+|---|---|
+| `contracts/attendance` | Lista de asistencia por sesión |
+| `contracts/voting` | Propuesta sí/no, un voto por address |
+| `contracts/grades` | Calificación por alumno y actividad |
+| `contracts/library` | Préstamo de ejemplares con cupo |
+| `contracts/enrollment` | Inscripción a curso con `capacity` |
+| `contracts/escrow` | Depósito condicional; el árbitro libera o reembolsa |
+
+### DeFi y operaciones
+
+| Contrato | Caso de uso |
+|---|---|
+| `contracts/payroll` | Dispersión de nómina por periodo (idempotente) |
+| `contracts/savings` | Ahorro por metas con penalización temprana |
+| `contracts/loan` | Colateral real, LTV, `liquidate` |
+| `contracts/yield` | Vault por shares (`deposit` / `harvest` / `withdraw`) |
+| `contracts/amm` | Pool `x * y = k`, slippage |
+| `contracts/nft-membership` | NFT de membresía / certificado |
+| `contracts/food-trace` | Trazabilidad de lotes (cadena alimentaria) |
 
 ## Integraciones listas para practicar
 
@@ -190,27 +217,44 @@ INTEGRATIONS_USE_MOCK=true npm run smoke:all
 
 ### 2) Contratos Soroban (tests)
 ```bash
-cargo test -p payroll -p savings -p loan -p yield -p nft-membership
+# Campus (sin tokens)
+cargo test -p attendance -p voting -p grades -p library -p enrollment
+
+# Tokens / DeFi
+cargo test -p escrow -p payroll -p savings -p loan -p yield -p amm -p nft-membership
+```
+
+Build de un contrato:
+
+```bash
+stellar contract build --manifest-path contracts/attendance/Cargo.toml
+# WASM: target/wasm32v1-none/release/attendance.wasm
 ```
 
 ### 3) Pago rápido en Testnet
+
+`--amount` va en **stroops** (1 XLM = `10_000_000`).
+
 ```bash
 stellar tx new payment \
-  --source <CUENTA_ORIGEN> \
-  --destination <CUENTA_DESTINO_PUBLICA> \
+  --source alice \
+  --destination bob \
   --asset native \
-  --amount 100
+  --amount 10_000_000 \
+  --network testnet
 ```
 
 ## Retos para practicar
 
-1. Cambia montos y vuelve a correr `payroll` y `savings`.
-2. Modifica un adapter en `examples/integrations` para añadir un campo nuevo en `data`.
-3. Crea un mini flujo: ahorro (`savings`) + prueba (`zkproof`) y documenta tu resultado.
+1. Campus: abre sesión en `attendance`, vota en `voting`, registra nota en `grades`.
+2. Llena el cupo en `enrollment` o los ejemplares en `library` y confirma el error.
+3. En `escrow`, bloquea 1 XLM y prueba `release` vs `refund`.
+4. En `loan`, sube `min_collateral_bps` y liquida; en `amm`, observa el slippage.
 
 ## Referencias clave del repo
 
 - Guía principal: [docs/guia-0-a-builder.md](docs/guia-0-a-builder.md)
+- CLI y labs: [docs/comandos-basicos.md](docs/comandos-basicos.md)
 - SEP y anclas: [docs/sep-estandares-anclas.md](docs/sep-estandares-anclas.md)
 - Integraciones: [docs/integraciones-protocolos.md](docs/integraciones-protocolos.md)
 - Frontend + contratos: [docs/frontend-contratos.md](docs/frontend-contratos.md)

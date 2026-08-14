@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capacitación Docente · Blockchain y Stellar (8h)</title>
+<style>
+  :root{
+    --bg:#0b1020;
+    --bg2:#111a33;
+    --ink:#eef4ff;
+    --muted:#b5c2dc;
+    --brand:#7cc4ff;
+    --brand-2:#66e3c4;
+    --warn:#ffd166;
+    --card:rgba(255,255,255,.06);
+    --line:rgba(255,255,255,.16);
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);color:var(--ink);background:linear-gradient(135deg,var(--bg),var(--bg2));overflow:hidden}
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(124,196,255,.2), transparent 30%),
+      radial-gradient(circle at 85% 75%, rgba(102,227,196,.15), transparent 35%);
+    animation:amb 10s ease-in-out infinite alternate;
+    z-index:0;
+  }
+  @keyframes amb{from{transform:scale(1)}to{transform:scale(1.04)}}
+
+  .deck{position:relative;z-index:1;height:100vh;width:100vw}
+  .slide{
+    position:absolute;inset:0;display:none;opacity:0;
+    padding:clamp(28px,5vw,72px);
+    overflow:auto;
+    transform:translateY(24px) scale(.985);
+  }
+  .slide.active{display:block;animation:in .45s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes in{from{opacity:0;transform:translateY(24px) scale(.985)}to{opacity:1;transform:none}}
+  .slide.active > *{animation:rise .45s ease both}
+  .slide.active > *:nth-child(2){animation-delay:.08s}
+  .slide.active > *:nth-child(3){animation-delay:.16s}
+  .slide.active > *:nth-child(4){animation-delay:.24s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  .tag{
+    display:inline-block;
+    font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:#06213d;background:var(--brand);padding:7px 12px;border-radius:999px;margin-bottom:16px;
+  }
+  h1{font-size:clamp(42px,7vw,88px);line-height:1.04;letter-spacing:-.02em;margin-bottom:14px}
+  h2{font-size:clamp(34px,5.2vw,66px);line-height:1.06;letter-spacing:-.02em;margin-bottom:16px}
+  h3{font-size:clamp(22px,2.8vw,32px);margin-bottom:8px}
+  p{font-size:clamp(20px,2.1vw,28px);line-height:1.45;color:var(--muted)}
+  .lead{max-width:72ch}
+  .brand{color:var(--brand)}
+  .mint{color:var(--brand-2)}
+  .warn{color:var(--warn);font-weight:700}
+
+  .grid{display:grid;gap:16px;margin-top:18px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;
+    backdrop-filter:blur(4px);
+  }
+  .card p{font-size:clamp(17px,1.7vw,22px)}
+  .big{font-size:clamp(40px,4.5vw,62px);font-weight:800;line-height:1;color:var(--brand)}
+  .small{font-size:clamp(14px,1.4vw,18px);color:var(--muted)}
+
+  ul.clean{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:8px}
+  ul.clean li{display:flex;gap:10px;line-height:1.4;color:var(--muted);font-size:clamp(18px,1.9vw,24px)}
+  ul.clean li::before{content:"▸";color:var(--brand);font-weight:800}
+  ul.clean b{color:var(--ink)}
+
+  .steps{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+  .step{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .n{width:44px;height:44px;display:grid;place-items:center;border-radius:9px;background:rgba(124,196,255,.2);border:1px solid rgba(124,196,255,.5);font-weight:800;color:var(--brand)}
+  .step p{font-size:clamp(17px,1.7vw,22px)}
+
+  .table{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:10px}
+  .row{display:grid;grid-template-columns:1.1fr 1fr;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .row div{padding:12px 14px;font-size:clamp(16px,1.5vw,20px)}
+  .l{font-weight:700;color:var(--ink)}
+  .r{color:var(--muted)}
+
+  .code{
+    font-family:var(--mono);font-size:clamp(15px,1.3vw,18px);line-height:1.55;color:#d8e6ff;
+    background:rgba(5,10,22,.9);border:1px solid rgba(124,196,255,.35);border-radius:12px;padding:14px;overflow:auto;
+  }
+
+  .footer{position:fixed;left:0;right:0;bottom:0;height:48px;background:rgba(8,12,24,.95);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-size:12px;color:var(--muted);z-index:6}
+  .controls{display:flex;align-items:center;gap:10px}
+  button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:#15233f;color:var(--ink);cursor:pointer;transition:.15s}
+  button:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(0,0,0,.25)}
+  .notes{position:fixed;left:0;right:0;bottom:48px;max-height:36vh;overflow:auto;background:rgba(8,12,24,.98);border-top:1px solid var(--line);padding:14px;color:var(--muted);display:none;z-index:7;font-size:15px}
+  .notes.show{display:block}
+  @media(max-width:960px){.g2,.g3{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="deck">
+  <section class="slide active" data-notes="Abre con objetivo: esta no es la presentación del programa, sino la capacitación que tú impartes en 8 horas.">
+    <div class="tag">Capacitación docente intensiva</div>
+    <h1>Blockchain aplicado a universidad<br><span class="brand">2 sesiones · programa concentrado</span></h1>
+    <p class="lead">Objetivo: que el profesorado comprenda lo esencial de blockchain y salga con capacidad real de impartir contenidos introductorios y prácticos con Stellar/Soroban.</p>
+    <div class="grid g3">
+      <div class="card"><div class="big">Sesión 1</div><div class="small">Base conceptual y pedagógica</div></div>
+      <div class="card"><div class="big">Sesión 2</div><div class="small">Hands-on técnica con CLI</div></div>
+      <div class="card"><div class="big">Salida</div><div class="small">Profesor listo para implementar</div></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Calibra a la audiencia y expectativas.">
+    <div class="tag">Arranque</div>
+    <h2>Qué logramos al final de las 8 horas</h2>
+    <ul class="clean">
+      <li><div><b>Comprender blockchain sin humo:</b> consenso, nodos, seguridad, redes y casos reales.</div></li>
+      <li><div><b>Dominar el mapa Stellar:</b> cuentas, activos, anclas, SEPs, contratos y ecosistema.</div></li>
+      <li><div><b>Ejecutar flujo técnico mínimo:</b> CLI, build, deploy e invoke con evidencia on-chain.</div></li>
+      <li><div><b>Traducir a docencia:</b> actividad evaluable, rúbrica y plan para su materia.</div></li>
+    </ul>
+  </section>
+
+  <section class="slide" data-notes="Desglose de toda la jornada en dos sesiones.">
+    <div class="tag">Mapa general</div>
+    <h2>Estructura de la capacitación</h2>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Sesión 1 · Teórica</h3>
+        <ul class="clean">
+          <li><div>Fundamentos de blockchain</div></li>
+          <li><div>Seguridad, nodos y modelos de consenso</div></li>
+          <li><div>Stellar, anclas y ecosistema</div></li>
+          <li><div>Cómo aterrizarlo a una asignatura</div></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Sesión 2 · Técnica (CLI)</h3>
+        <ul class="clean">
+          <li><div>Instalación y entorno</div></li>
+          <li><div>Operaciones en testnet</div></li>
+          <li><div>Build/deploy/invoke de contrato</div></li>
+          <li><div>Checklist de fallos comunes y evaluación</div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Primera sesión, parte conceptual base.">
+    <div class="tag">Sesión 1 · Bloque A</div>
+    <h2>Blockchain esencial para explicar en clase</h2>
+    <div class="table">
+      <div class="row"><div class="l">Qué problema resuelve</div><div class="r">Coordinación y confianza entre actores sin servidor central</div></div>
+      <div class="row"><div class="l">Componentes mínimos</div><div class="r">Transacciones, bloques/ledgers, nodos, firma digital</div></div>
+      <div class="row"><div class="l">Qué sí enseñar</div><div class="r">Integridad, trazabilidad, finalización, costos de red</div></div>
+      <div class="row"><div class="l">Qué evitar al inicio</div><div class="r">Especulación, hype, jerga excesiva</div></div>
+    </div>
+    <p class="lead"><span class="warn">Mensaje clave:</span> blockchain no reemplaza toda base de datos; se usa cuando importa auditoría compartida y reglas verificables.</p>
+  </section>
+
+  <section class="slide" data-notes="Seguridad y consenso en lenguaje de ingeniería.">
+    <div class="tag">Sesión 1 · Bloque B</div>
+    <h2>Seguridad, nodos y consenso</h2>
+    <div class="grid g3">
+      <div class="card"><h3>Nodos</h3><p>Replican estado, validan transacciones y convergen en un ledger común.</p></div>
+      <div class="card"><h3>Seguridad</h3><p>Firmas criptográficas, inmutabilidad práctica y validación distribuida.</p></div>
+      <div class="card"><h3>Consenso</h3><p>PoW/PoS/SCP: comparar costo, latencia, finalidad y gobernanza.</p></div>
+    </div>
+    <ul class="clean">
+      <li><div><b>Riesgos docentes a discutir:</b> llaves privadas, phishing, dependencia de terceros, errores operativos.</div></li>
+      <li><div><b>Buenas prácticas:</b> testnet primero, separación de ambientes, revisión de comandos.</div></li>
+    </ul>
+  </section>
+
+  <section class="slide" data-notes="Stellar en contexto de pagos y anclas.">
+    <div class="tag">Sesión 1 · Bloque C</div>
+    <h2>Stellar, anclas y ecosistema</h2>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Stellar en una frase</h3>
+        <p>Red enfocada en pagos y activos con liquidación rápida y costos bajos.</p>
+        <ul class="clean">
+          <li><div>Cuentas y activos</div></li>
+          <li><div>Horizon y RPC</div></li>
+          <li><div>Soroban para contratos</div></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Anclas y SEPs</h3>
+        <p>Las anclas conectan fiat↔on-chain; SEPs estandarizan autenticación, KYC y transferencias.</p>
+        <ul class="clean">
+          <li><div>SEP-10 (auth)</div></li>
+          <li><div>SEP-12 (KYC)</div></li>
+          <li><div>SEP-24/6/31/38 (flujos de dinero)</div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Cierre de sesión teórica: producto docente.">
+    <div class="tag">Sesión 1 · Cierre</div>
+    <h2>Producto al terminar la parte teórica</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div><p><b>Mapa de materia:</b> en qué unidad de su asignatura entra blockchain.</p></div></div>
+      <div class="step"><div class="n">2</div><div><p><b>Objetivo de aprendizaje:</b> medible y evaluable para su grupo.</p></div></div>
+      <div class="step"><div class="n">3</div><div><p><b>Actividad de clase:</b> teoría + ejercicio práctico de evidencia on-chain.</p></div></div>
+      <div class="step"><div class="n">4</div><div><p><b>Criterio de evaluación:</b> rúbrica simple o checklist de desempeño.</p></div></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Inicio de sesión técnica.">
+    <div class="tag">Sesión 2 · Bloque A</div>
+    <h2>Preparación técnica para el laboratorio</h2>
+    <ul class="clean">
+      <li><div>Instalar herramientas: Stellar CLI, Rust/Cargo, Git.</div></li>
+      <li><div>Configurar identidad de prueba y red testnet.</div></li>
+      <li><div>Entender rutas de proyecto y estructura de `contracts/`.</div></li>
+      <li><div>Explicar por qué usamos testnet para docencia segura.</div></li>
+    </ul>
+    <div class="code"># ejemplo base
+stellar --version
+stellar keys generate profe --network testnet --fund</div>
+  </section>
+
+  <section class="slide" data-notes="CLI flujo clásico de operaciones.">
+    <div class="tag">Sesión 2 · Bloque B</div>
+    <h2>Flujo básico con CLI (cuentas y pagos)</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div><p>Crear dos identidades de prueba.</p></div></div>
+      <div class="step"><div class="n">2</div><div><p>Fonduarlas en testnet y verificar balances.</p></div></div>
+      <div class="step"><div class="n">3</div><div><p>Enviar pago y recuperar hash de transacción.</p></div></div>
+      <div class="step"><div class="n">4</div><div><p>Verificar en explorador y registrar evidencia.</p></div></div>
+    </div>
+    <div class="code">stellar keys generate alice --network testnet --fund
+stellar keys generate bob --network testnet --fund
+stellar tx new payment --source alice --destination bob --amount 10 --asset native --network testnet</div>
+  </section>
+
+  <section class="slide" data-notes="Contratos: build deploy invoke.">
+    <div class="tag">Sesión 2 · Bloque C</div>
+    <h2>Deploy de contrato y primer invoke</h2>
+    <ul class="clean">
+      <li><div>Compilar contrato (`build`).</div></li>
+      <li><div>Desplegar WASM (`deploy`).</div></li>
+      <li><div>Invocar método (`invoke`).</div></li>
+      <li><div>Documentar errores típicos y solución en clase.</div></li>
+    </ul>
+    <div class="code">stellar contract build --manifest-path contracts/counter/Cargo.toml
+stellar contract deploy --wasm target/wasm32v1-none/release/counter.wasm --source profe --network testnet
+stellar contract invoke --id C... --source profe --network testnet -- increment</div>
+  </section>
+
+  <section class="slide" data-notes="Security + operational hygiene for class.">
+    <div class="tag">Sesión 2 · Bloque D</div>
+    <h2>Seguridad operativa para la práctica docente</h2>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Checklist obligatorio</h3>
+        <ul class="clean">
+          <li><div>No compartir llaves secretas.</div></li>
+          <li><div>Usar solo testnet en capacitación.</div></li>
+          <li><div>Validar directorio antes de ejecutar build/deploy.</div></li>
+          <li><div>Guardar evidencia de comandos ejecutados.</div></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Errores frecuentes</h3>
+        <ul class="clean">
+          <li><div>Manifest path incorrecto.</div></li>
+          <li><div>Contrato no inicializado.</div></li>
+          <li><div>Confusión entre XLM y stroops.</div></li>
+          <li><div>Workspace Cargo mal configurado.</div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Ecosistema y casos aplicados a carreras.">
+    <div class="tag">Aplicación universitaria</div>
+    <h2>Ecosistema y casos para llevar al aula</h2>
+    <div class="grid g3">
+      <div class="card"><h3>Fintech</h3><p>Remesas, pagos, on/off ramp, cumplimiento.</p></div>
+      <div class="card"><h3>Ingeniería de software</h3><p>Contratos, testing, QA, observabilidad.</p></div>
+      <div class="card"><h3>Sistemas de información</h3><p>Trazabilidad, auditoría y gobernanza de datos.</p></div>
+      <div class="card"><h3>Seguridad</h3><p>Modelos de amenaza, gestión de llaves.</p></div>
+      <div class="card"><h3>Emprendimiento</h3><p>MVP con wallet + contrato + frontend.</p></div>
+      <div class="card"><h3>Vinculación</h3><p><code>food-trace</code>, nómina, ahorro, crédito.</p></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="What they must leave with.">
+    <div class="tag">Cierre de capacitación</div>
+    <h2>Entregables finales del profesorado</h2>
+    <ul class="clean">
+      <li><div><b>Microplaneación:</b> 1 sesión lista para impartir en su materia.</div></li>
+      <li><div><b>Evidencia técnica:</b> hash o ID de contrato generado en práctica.</div></li>
+      <li><div><b>Instrumento de evaluación:</b> rúbrica/checklist adaptado.</div></li>
+      <li><div><b>Plan de implementación:</b> semana y unidad curricular donde se aplicará.</div></li>
+    </ul>
+  </section>
+
+  <section class="slide" data-notes="Call to action tomorrow.">
+    <div class="tag">Recursos de apoyo</div>
+    <h1>Material listo para ejecutar <span class="mint">mañana</span></h1>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Programa pedagógico</h3>
+        <p><code>course/programa-docentes.md</code></p>
+      </div>
+      <div class="card">
+        <h3>Programa de curso</h3>
+        <p><code>course/syllabus.md</code></p>
+      </div>
+      <div class="card">
+        <h3>Semana de arranque</h3>
+        <p><code>course/weeks/semana-01.md</code></p>
+      </div>
+      <div class="card">
+        <h3>Plantilla docente</h3>
+        <p><code>course/recursos/plantilla-clase.md</code></p>
+      </div>
+    </div>
+    <p class="lead"><span class="warn">Meta:</span> que cada profesor salga capacitado para impartir una primera sesión con evidencia on-chain verificable.</p>
+  </section>
+</div>
+
+<div class="notes" id="notes"></div>
+<div class="footer">
+  <div>Capacitación Docente · Blockchain/CLI</div>
+  <div class="controls">
+    <button id="prev">‹</button>
+    <span id="count">1 / 14</span>
+    <button id="next">›</button>
+    <span>← → Espacio · F · N</span>
+  </div>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let i = 0;
+  const notes = document.getElementById('notes');
+  const count = document.getElementById('count');
+  const render = () => {
+    slides.forEach((s, n) => s.classList.toggle('active', n === i));
+    count.textContent = `${i + 1} / ${slides.length}`;
+    if (notes.classList.contains('show')) notes.innerHTML = slides[i].dataset.notes || 'Sin notas.';
+  };
+  const go = (n) => { i = Math.max(0, Math.min(slides.length - 1, n)); render(); };
+  const next = () => go(i + 1);
+  const prev = () => go(i - 1);
+  document.getElementById('next').onclick = next;
+  document.getElementById('prev').onclick = prev;
+  addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') go(0);
+    else if (e.key === 'End') go(slides.length - 1);
+    else if (e.key.toLowerCase() === 'f') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    } else if (e.key.toLowerCase() === 'n') {
+      notes.classList.toggle('show');
+      render();
+    }
+  });
+  let x0 = null;
+  addEventListener('touchstart', (e) => x0 = e.touches[0].clientX);
+  addEventListener('touchend', (e) => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50) (dx < 0 ? next : prev)();
+    x0 = null;
+  });
+  render();
+</script>
+</body>
+</html>

@@ -4,7 +4,6 @@
 - Node.js LTS (incluye npm)
 - Rust y cargo (via rustup)
 - Stellar CLI (herramienta principal)
-- soroban-cli (alternativa/legacy para contratos)
 - Opcional: Python 3 + pip para ejemplos alternativos
 
 ## Node.js

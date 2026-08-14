@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 1 · Redes de Dinero y Blockchain</title>
+<style>
+  :root{
+    --bg:#0e0d13;
+    --bg2:#15131d;
+    --ink:#f5f4fa;
+    --muted:#a2a0b0;
+    --brand:#9b7bff;
+    --brand-soft:rgba(155,123,255,.14);
+    --ok:#66e3c4;
+    --warn:#ffd23f;
+    --card:rgba(255,255,255,.045);
+    --line:rgba(255,255,255,.13);
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);background:linear-gradient(180deg,var(--bg),var(--bg2));color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+
+  .bg-grid{
+    position:fixed;inset:-2px;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(155,123,255,.07) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(155,123,255,.07) 1px,transparent 1px);
+    background-size:54px 54px;
+    -webkit-mask-image:radial-gradient(ellipse 90% 80% at 50% 45%,#000 35%,transparent 88%);
+    mask-image:radial-gradient(ellipse 90% 80% at 50% 45%,#000 35%,transparent 88%);
+    animation:gridDrift 24s linear infinite;
+  }
+  @keyframes gridDrift{from{background-position:0 0,0 0}to{background-position:54px 54px,54px 54px}}
+
+  .bg-scan{
+    position:fixed;top:0;left:0;right:0;height:1px;z-index:0;pointer-events:none;
+    background:rgba(255,210,63,.45);
+    box-shadow:0 0 16px 1px rgba(255,210,63,.45);
+    opacity:0;animation:scan 9s ease-in-out infinite;
+  }
+  @keyframes scan{0%{transform:translateY(0);opacity:0}8%{opacity:.75}45%{opacity:.3}90%{opacity:0}100%{transform:translateY(100vh);opacity:0}}
+
+  .bg{
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(circle at 14% 18%, rgba(155,123,255,.16), transparent 34%),
+      radial-gradient(circle at 82% 76%, rgba(102,227,196,.11), transparent 36%);
+    animation:ambient 10s ease-in-out infinite alternate;
+  }
+  @keyframes ambient{from{transform:scale(1)}to{transform:scale(1.04)}}
+
+  .deck{position:relative;z-index:1;height:100vh;width:100vw}
+  .slide{
+    position:absolute;inset:0;display:none;opacity:0;overflow:auto;
+    padding:clamp(28px,5vw,72px);
+    transform:translateY(24px) scale(.985);
+    justify-content:center;
+    align-items:center;
+    gap:14px;
+  }
+  .slide.active{display:flex;flex-direction:column;animation:slideIn .45s cubic-bezier(.2,.85,.3,1) both}
+  @keyframes slideIn{from{opacity:0;transform:translateY(24px) scale(.985)}to{opacity:1;transform:none}}
+  .slide.active>*{animation:contentIn .45s ease both}
+  .slide.active>*:nth-child(2){animation-delay:.08s}
+  .slide.active>*:nth-child(3){animation-delay:.16s}
+  .slide.active>*:nth-child(4){animation-delay:.24s}
+  @keyframes contentIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  .tag{
+    display:inline-block;
+    font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:#d7cbff;
+    border:1px solid rgba(155,123,255,.45);
+    background:var(--brand-soft);
+    border-radius:999px;
+    padding:7px 12px;
+    margin-bottom:16px;
+  }
+  .pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:8px 14px;border-radius:999px;
+    border:1px solid var(--line);background:rgba(255,255,255,.04);
+    color:var(--ink);font-size:14px;font-weight:600;
+  }
+  .pill::before{content:"";width:7px;height:7px;border-radius:50%;background:#c4abff}
+  h1{font-size:clamp(44px,7vw,86px);line-height:1.03;letter-spacing:-.03em;margin-bottom:12px}
+  h2{font-size:clamp(34px,5vw,62px);line-height:1.07;letter-spacing:-.02em;margin-bottom:16px}
+  h3{font-size:clamp(22px,2.7vw,32px);margin-bottom:8px}
+  p{font-size:clamp(20px,2vw,27px);line-height:1.45;color:var(--muted)}
+  .lead{max-width:72ch}
+  .brand{color:var(--brand)}
+  .ok{color:var(--ok);font-weight:700}
+  .warn{color:var(--warn);font-weight:700}
+
+  .grid{display:grid;gap:16px;margin-top:16px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px;
+    backdrop-filter:blur(5px);
+    box-shadow:0 14px 28px rgba(0,0,0,.24);
+    transition:transform .22s ease,border-color .22s ease;
+  }
+  .card:hover{transform:translateY(-3px);border-color:rgba(155,123,255,.45)}
+  .card p{font-size:clamp(17px,1.6vw,22px)}
+  .big{font-size:clamp(38px,4.5vw,58px);font-weight:800;color:#c4abff;line-height:1}
+  .small{font-size:clamp(14px,1.2vw,18px);color:var(--muted)}
+
+  ul.clean{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:10px}
+  ul.clean li{display:flex;gap:10px;color:var(--muted);font-size:clamp(18px,1.8vw,24px);line-height:1.42}
+  ul.clean li::before{content:"▸";color:var(--brand);font-weight:800}
+  ul.clean b{color:var(--ink)}
+
+  .table{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(255,255,255,.03);margin-top:10px}
+  .row{display:grid;grid-template-columns:1.2fr 1fr;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .row div{padding:12px 14px;font-size:clamp(16px,1.5vw,20px)}
+  .l{font-weight:700}
+  .r{color:var(--muted)}
+
+  .flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .node{background:rgba(255,255,255,.03);border:1px solid var(--line);padding:10px 12px;border-radius:10px;font-size:clamp(14px,1.2vw,18px);font-weight:700}
+  .arrow{font-family:var(--mono);color:#ffd23f;font-size:22px}
+
+  .bars{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+  .bar-row{display:grid;grid-template-columns:170px 1fr 90px;gap:10px;align-items:center}
+  .bar-label{font-size:16px;font-weight:700}
+  .bar-wrap{height:16px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden}
+  .bar{height:100%;background:linear-gradient(90deg,#c4abff,#9b7bff);border-radius:999px}
+  .bar-note{font-size:15px;color:var(--muted);text-align:right}
+
+  .timeline{position:relative;margin-top:22px;padding-left:24px}
+  .timeline::before{content:"";position:absolute;left:6px;top:2px;bottom:2px;width:3px;background:rgba(196,171,255,.7);border-radius:4px}
+  .event{position:relative;margin:0 0 14px 0;padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px}
+  .event::before{content:"";position:absolute;left:-22px;top:16px;width:10px;height:10px;border-radius:50%;background:#c4abff}
+  .event .yr{font-family:var(--mono);font-size:14px;color:var(--brand);font-weight:700}
+  .event .tx{font-size:16px;color:var(--muted)}
+
+  .steps{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+  .step{display:flex;gap:12px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .n{width:44px;height:44px;display:grid;place-items:center;border-radius:9px;background:var(--brand-soft);border:1px solid rgba(155,123,255,.5);font-weight:800;color:#d7cbff}
+  .step p{font-size:clamp(17px,1.6vw,22px)}
+
+  .donuts{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px}
+  .donut-card{
+    width:220px;
+    background:rgba(255,255,255,.03);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px 12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+  }
+  .donut{
+    --val:75;
+    width:128px;height:128px;border-radius:50%;
+    background:conic-gradient(#c4abff calc(var(--val)*1%), rgba(255,255,255,.12) 0);
+    display:grid;place-items:center;position:relative;
+  }
+  .donut::after{
+    content:attr(data-pct);
+    width:90px;height:90px;border-radius:50%;
+    background:#15131d;border:1px solid var(--line);
+    display:grid;place-items:center;text-align:center;
+    font-size:20px;font-weight:800;color:#e8e2ff;
+  }
+  .donut-label{
+    text-align:center;
+    color:var(--muted);
+    font-size:15px;
+    line-height:1.25;
+    min-height:38px;
+  }
+
+  /* SCP animation */
+  .scp-wrap{margin-top:16px;display:grid;place-items:center}
+  .scp{
+    width:min(620px,90vw);height:340px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03);position:relative;overflow:hidden;
+  }
+  .scp .title{position:absolute;left:12px;top:10px;font-size:14px;font-weight:700;color:var(--muted)}
+  .ledger{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);padding:8px 12px;border-radius:10px;background:rgba(102,227,196,.14);border:1px solid rgba(102,227,196,.45);color:#9ff8e3;font-size:13px;font-weight:700;opacity:.35}
+  .nodo{
+    position:absolute;width:52px;height:52px;border-radius:50%;
+    background:rgba(196,171,255,.12);border:2px solid rgba(196,171,255,.55);color:#e5d9ff;font-weight:800;
+    display:grid;place-items:center;font-size:15px;
+    animation:pulse 2.6s ease-in-out infinite;
+  }
+  .n1{left:80px;top:70px;animation-delay:0s}
+  .n2{left:285px;top:40px;animation-delay:.3s}
+  .n3{left:490px;top:70px;animation-delay:.6s}
+  .n4{left:120px;top:190px;animation-delay:.9s}
+  .n5{left:285px;top:230px;animation-delay:1.2s}
+  .n6{left:450px;top:190px;animation-delay:1.5s}
+  @keyframes pulse{
+    0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(37,99,235,.2)}
+    50%{transform:scale(1.08);box-shadow:0 0 0 12px rgba(37,99,235,0)}
+  }
+  .link{
+    position:absolute;height:2px;background:#bfdbfe;transform-origin:left center;
+    animation:flow 3.2s linear infinite;
+  }
+  .l1{left:132px;top:95px;width:165px;transform:rotate(-9deg)}
+  .l2{left:340px;top:95px;width:165px;transform:rotate(9deg)}
+  .l3{left:148px;top:215px;width:140px;transform:rotate(14deg)}
+  .l4{left:337px;top:214px;width:130px;transform:rotate(-13deg)}
+  .l5{left:312px;top:94px;width:2px;height:145px;transform:rotate(0)}
+  @keyframes flow{
+    0%{opacity:.2}
+    50%{opacity:1;background:#60a5fa}
+    100%{opacity:.2}
+  }
+  .phase{
+    position:absolute;right:10px;top:36px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:10px;width:200px;
+    font-size:13px;color:var(--muted);
+  }
+  .phase div{margin-bottom:6px}
+  .phase b{color:var(--ink)}
+  .scp.active .ledger{animation:ledgerOn 3.2s ease-in-out infinite}
+  @keyframes ledgerOn{
+    0%,40%{opacity:.35}
+    60%,100%{opacity:1;box-shadow:0 0 0 8px rgba(15,118,110,0)}
+  }
+
+  .footer{
+    position:fixed;left:0;right:0;bottom:0;height:48px;z-index:8;
+    background:rgba(14,13,19,.96);border-top:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;padding:0 14px;
+    font-size:12px;color:var(--muted);
+  }
+  .controls{display:flex;align-items:center;gap:10px}
+  button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);cursor:pointer;transition:.15s}
+  button:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(0,0,0,.3);border-color:rgba(155,123,255,.5)}
+
+  .notes{
+    position:fixed;left:0;right:0;bottom:48px;max-height:36vh;overflow:auto;z-index:9;
+    background:rgba(14,13,19,.98);border-top:1px solid var(--line);padding:14px;
+    color:var(--muted);font-size:15px;display:none;
+  }
+  .notes.show{display:block}
+  .hint{
+    position:fixed;top:16px;right:20px;z-index:8;
+    font-family:var(--mono);font-size:12px;color:rgba(162,160,176,.8);
+  }
+  .chrome{position:fixed;left:0;right:0;bottom:48px;height:5px;background:rgba(255,255,255,.08);z-index:8}
+  .bar{height:100%;width:0;background:linear-gradient(90deg,#9b7bff,#66e3c4);transition:width .35s ease}
+
+  /* centra y limita ancho para ocupar mejor pantalla */
+  .slide > *{
+    width:min(1320px,100%);
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .slide > h1,.slide > h2,.slide > p.lead{max-width:1200px}
+  .slide > .flow,.slide > .donuts,.slide > .bars,.slide > .steps,.slide > .table,.slide > .grid{width:min(1280px,100%)}
+  .donuts{justify-content:center}
+  .flow{justify-content:flex-start}
+
+  @media(max-width:980px){
+    .g2,.g3{grid-template-columns:1fr}
+    .row{grid-template-columns:1fr}
+    .bar-row{grid-template-columns:1fr}
+    .scp{height:420px}
+    .n1{left:30px;top:90px}.n2{left:160px;top:50px}.n3{left:290px;top:90px}
+    .n4{left:70px;top:250px}.n5{left:170px;top:300px}.n6{left:270px;top:250px}
+    .l1{left:80px;top:115px;width:90px}
+    .l2{left:210px;top:115px;width:90px}
+    .l3{left:95px;top:275px;width:70px}
+    .l4{left:215px;top:274px;width:70px}
+    .l5{left:185px;top:110px;height:190px}
+    .phase{right:10px;top:10px}
+    .slide{justify-content:flex-start}
+    .slide > *{width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-scan"></div>
+<div class="bg"></div>
+<div class="hint">← → espacio · F · N</div>
+<div class="deck">
+
+  <section class="slide active" data-notes="Apertura. Enmarca esta sesión como bloque teórico: problema, contexto histórico y respuesta tecnológica con Stellar.">
+    <div class="tag">Sesión 1 · Bloque Teórico</div>
+    <h1>Redes de dinero, crisis y <span class="brand">blockchain</span></h1>
+    <p class="lead">Recorrido concentrado para entender: rieles de pago, seguridad bancaria, registro distribuido, crisis 2008, consolidación del ecosistema y consenso SCP con enfoque en Stellar.</p>
+    <div class="pills">
+      <span class="pill">Rieles de pago</span>
+      <span class="pill">Crisis 2008</span>
+      <span class="pill">Registro distribuido</span>
+      <span class="pill">Ecosistema</span>
+      <span class="pill">Stellar + SCP</span>
+    </div>
+    <div class="grid g3">
+      <div class="card"><div class="big">Problema</div><div class="small">Fricción en rieles financieros</div></div>
+      <div class="card"><div class="big">Respuesta</div><div class="small">Infraestructura distribuida verificable</div></div>
+      <div class="card"><div class="big">Cambio</div><div class="small">De sistemas cerrados a redes programables</div></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Agenda de la sesión inspirada en la estructura narrativa de index: problema, contexto, arquitectura, caso Stellar y consenso.">
+    <div class="tag">Agenda de la sesión</div>
+    <h2>De rieles tradicionales a consenso distribuido</h2>
+    <div class="grid g3">
+      <div class="card"><h3>1 · Problema</h3><p>Rieles de pago, fricción y límites de la infraestructura actual.</p></div>
+      <div class="card"><h3>2 · Contexto</h3><p>Crisis 2008 y pérdida de confianza en intermediarios.</p></div>
+      <div class="card"><h3>3 · Respuesta</h3><p>Registro distribuido y maduración del ecosistema blockchain.</p></div>
+      <div class="card"><h3>4 · Stellar</h3><p>Pagos y activos como capa pragmática de adopción.</p></div>
+      <div class="card"><h3>5 · SCP</h3><p>Mecanismo de consenso explicado con visual y animación de nodos.</p></div>
+      <div class="card"><h3>6 · Cierre</h3><p>Mensajes clave para conectar teoría con implementación.</p></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Presenta la conexión entre bloques teóricos en formato de mapa visual.">
+    <div class="tag">Ruta de la sesión</div>
+    <h2>Mapa de contenidos de hoy</h2>
+    <div class="flow">
+      <div class="node">Rieles de pago</div><span class="arrow">→</span>
+      <div class="node">Seguridad bancaria</div><span class="arrow">→</span>
+      <div class="node">Crisis 2008</div><span class="arrow">→</span>
+      <div class="node">Blockchain</div><span class="arrow">→</span>
+      <div class="node">Ecosistema</div><span class="arrow">→</span>
+      <div class="node">Stellar + SCP</div>
+    </div>
+    <div class="grid g2">
+      <div class="card"><h3>Enfoque</h3><p>Comprensión conceptual profunda con lenguaje de ingeniería y finanzas.</p></div>
+      <div class="card"><h3>Salida</h3><p>Base teórica sólida para pasar a la sesión técnica con CLI.</p></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Explicar el flujo tradicional y sus cuellos de botella.">
+    <div class="tag">Rieles de dinero</div>
+    <h2>Cómo se mueve el dinero en rieles tradicionales</h2>
+    <div class="flow">
+      <div class="node">Usuario A</div><span class="arrow">→</span>
+      <div class="node">Banco Emisor</div><span class="arrow">→</span>
+      <div class="node">Banco Corresponsal</div><span class="arrow">→</span>
+      <div class="node">Banco Receptor</div><span class="arrow">→</span>
+      <div class="node">Usuario B</div>
+    </div>
+    <div class="bars">
+      <div class="bar-row">
+        <div class="bar-label">Latencia operativa</div>
+        <div class="bar-wrap"><div class="bar" style="width:84%"></div></div>
+        <div class="bar-note">Alta</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Costo por intermediación</div>
+        <div class="bar-wrap"><div class="bar" style="width:76%"></div></div>
+        <div class="bar-note">Medio/Alto</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Trazabilidad de extremo a extremo</div>
+        <div class="bar-wrap"><div class="bar" style="width:42%"></div></div>
+        <div class="bar-note">Limitada</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Contrasta seguridad tradicional con retos de coordinación.">
+    <div class="tag">Seguridad bancaria</div>
+    <h2>Seguridad robusta, pero con dependencias críticas</h2>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Fortalezas del modelo actual</h3>
+        <ul class="clean">
+          <li><div>Regulación y supervisión formal.</div></li>
+          <li><div>Controles KYC/AML y auditorías.</div></li>
+          <li><div>Gestión de riesgo institucional.</div></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Límites sistémicos</h3>
+        <ul class="clean">
+          <li><div>Múltiples bases de datos cerradas.</div></li>
+          <li><div>Conciliación interinstitucional compleja.</div></li>
+          <li><div>Baja visibilidad para el usuario final.</div></li>
+        </ul>
+      </div>
+    </div>
+    <p class="lead"><span class="warn">Idea clave:</span> el problema no es solo ciberseguridad; también es coordinación y confianza entre múltiples actores.</p>
+  </section>
+
+  <section class="slide" data-notes="Construir narrativa histórica.">
+    <div class="tag">Contexto histórico</div>
+    <h2>Crisis 2008 y crisis de confianza</h2>
+    <div class="timeline">
+      <div class="event"><div class="yr">2007–2008</div><div class="tx">Colapso de crédito y contagio global por instrumentos opacos.</div></div>
+      <div class="event"><div class="yr">2008</div><div class="tx">Rescates, quiebras y fuerte desconfianza en intermediarios financieros.</div></div>
+      <div class="event"><div class="yr">2009</div><div class="tx">Aparece Bitcoin con una propuesta de registro público verificable.</div></div>
+      <div class="event"><div class="yr">2010s</div><div class="tx">Ecosistema crece: infraestructura, stablecoins, contratos, cumplimiento.</div></div>
+      <div class="event"><div class="yr">Hoy</div><div class="tx">Modelos híbridos: regulación + infra distribuida para pagos y activos.</div></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Explicar blockchain como cambio de arquitectura de confianza.">
+    <div class="tag">Respuesta tecnológica</div>
+    <h2>Blockchain: del “confía en mí” al <span class="brand">“verifica”</span></h2>
+    <div class="table">
+      <div class="row"><div class="l">Base de datos central</div><div class="r">Una entidad controla escritura, lectura y reconciliación.</div></div>
+      <div class="row"><div class="l">Registro distribuido</div><div class="r">Múltiples nodos validan y convergen en un estado compartido.</div></div>
+      <div class="row"><div class="l">Auditoría</div><div class="r">Trazabilidad nativa de operaciones y estados.</div></div>
+      <div class="row"><div class="l">Confianza</div><div class="r">Se desplaza desde institución única hacia reglas verificables.</div></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Mostrar que ya hay madurez, no solo experimento.">
+    <div class="tag">Consolidación del ecosistema</div>
+    <h2>Cómo madura el stack blockchain</h2>
+    <div class="donuts">
+      <div class="donut-card">
+        <div class="donut" style="--val:78" data-pct="78%"></div>
+        <div class="donut-label">Infraestructura de red</div>
+      </div>
+      <div class="donut-card">
+        <div class="donut" style="--val:72" data-pct="72%"></div>
+        <div class="donut-label">Cumplimiento regulatorio</div>
+      </div>
+      <div class="donut-card">
+        <div class="donut" style="--val:81" data-pct="81%"></div>
+        <div class="donut-label">Casos de uso en pagos y activos</div>
+      </div>
+      <div class="donut-card">
+        <div class="donut" style="--val:68" data-pct="68%"></div>
+        <div class="donut-label">Adopción institucional</div>
+      </div>
+    </div>
+    <p class="lead">La narrativa cambia de “tecnología emergente” a <span class="ok">infraestructura financiera programable</span> con distintos niveles de adopción.</p>
+  </section>
+
+  <section class="slide" data-notes="Ubicar Stellar en el mapa de pagos.">
+    <div class="tag">Transición con Stellar</div>
+    <h2>Por qué Stellar encaja en este cambio</h2>
+    <div class="grid g3">
+      <div class="card"><h3>Enfoque pagos</h3><p>Diseñada para mover valor de forma rápida y de bajo costo.</p></div>
+      <div class="card"><h3>Activos y anclas</h3><p>Conecta dinero tradicional con activos digitales bajo estándares.</p></div>
+      <div class="card"><h3>Soroban</h3><p>Lógica programable para automatizar reglas financieras.</p></div>
+    </div>
+    <ul class="clean">
+      <li><div><b>Mensaje central:</b> no reemplaza todo el sistema bancario; moderniza rieles específicos.</div></li>
+      <li><div><b>Valor práctico:</b> permite modelar sistemas distribuidos con caso financiero real.</div></li>
+    </ul>
+  </section>
+
+  <section class="slide" data-notes="Explicación conceptual de SCP previa a la animación de nodos.">
+    <div class="tag">Consenso SCP</div>
+    <h2>Qué es SCP en lenguaje simple</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div><p><b>Quorum slices:</b> cada nodo define en quién confía para validar.</p></div></div>
+      <div class="step"><div class="n">2</div><div><p><b>Intersección de quórums:</b> la red converge cuando confianzas se traslapan.</p></div></div>
+      <div class="step"><div class="n">3</div><div><p><b>Finalización:</b> se cierra el ledger con acuerdo distribuido.</p></div></div>
+      <div class="step"><div class="n">4</div><div><p><b>Resultado:</b> rapidez, costos bajos y seguridad sin minería intensiva.</p></div></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Diapositiva animada de SCP para explicación visual.">
+    <div class="tag">Animación · SCP</div>
+    <h2>Nodos, validación y cierre de ledger</h2>
+    <div class="scp-wrap">
+      <div class="scp active">
+        <div class="title">Modelo conceptual (didáctico)</div>
+        <div class="link l1"></div><div class="link l2"></div><div class="link l3"></div><div class="link l4"></div><div class="link l5"></div>
+        <div class="nodo n1">A</div>
+        <div class="nodo n2">B</div>
+        <div class="nodo n3">C</div>
+        <div class="nodo n4">D</div>
+        <div class="nodo n5">E</div>
+        <div class="nodo n6">F</div>
+        <div class="phase">
+          <div><b>Fase 1:</b> propuesta de estado</div>
+          <div><b>Fase 2:</b> votos en slices</div>
+          <div><b>Fase 3:</b> intersección/quórum</div>
+          <div><b>Fase 4:</b> ledger finalizado</div>
+        </div>
+        <div class="ledger">Ledger cerrado</div>
+      </div>
+    </div>
+    <p class="lead">Usa esta animación para explicar que SCP depende de <span class="ok">confianza federada + intersección</span>, no de poder de cómputo masivo.</p>
+  </section>
+
+  <section class="slide" data-notes="Cierre de sesión 1: síntesis de ideas para conectar con la sesión técnica posterior.">
+    <div class="tag">Cierre de la sesión</div>
+    <h1>Mensajes clave del bloque teórico</h1>
+    <ul class="clean">
+      <li><div>Los rieles de dinero son infraestructura crítica de la economía.</div></li>
+      <li><div>Blockchain surge en un contexto de quiebre de confianza institucional.</div></li>
+      <li><div>Registro distribuido = coordinación verificable entre actores.</div></li>
+      <li><div>Stellar representa una vía pragmática para pagos/activos programables.</div></li>
+      <li><div>SCP ofrece un caso potente para enseñar consenso en universidad.</div></li>
+    </ul>
+    <p class="lead"><span class="ok">Salida de esta sesión:</span> narrativa sólida para pasar de contexto histórico a implementación técnica con CLI.</p>
+  </section>
+
+</div>
+
+<div class="notes" id="notes"></div>
+<div class="chrome"><div class="bar" id="bar"></div></div>
+<div class="footer">
+  <div>Sesión 1 · Redes de Dinero y Blockchain</div>
+  <div class="controls">
+    <button id="prev" aria-label="Anterior">‹</button>
+    <span id="count">1 / 12</span>
+    <button id="next" aria-label="Siguiente">›</button>
+    <span>← → Espacio · F · N</span>
+  </div>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  const notes = document.getElementById("notes");
+  const count = document.getElementById("count");
+  const bar = document.getElementById("bar");
+  let i = 0;
+
+  function render(){
+    slides.forEach((s,n)=>s.classList.toggle("active", n===i));
+    count.textContent = `${i+1} / ${slides.length}`;
+    bar.style.width = ((i+1)/slides.length*100) + "%";
+    if(notes.classList.contains("show")){
+      notes.innerHTML = slides[i].dataset.notes || "Sin notas.";
+    }
+  }
+  function go(n){ i = Math.max(0, Math.min(slides.length-1, n)); render(); }
+  const next = ()=>go(i+1);
+  const prev = ()=>go(i-1);
+
+  document.getElementById("next").onclick = next;
+  document.getElementById("prev").onclick = prev;
+
+  document.addEventListener("keydown",(e)=>{
+    if(["ArrowRight","PageDown"," "].includes(e.key)){e.preventDefault();next();}
+    else if(["ArrowLeft","PageUp"].includes(e.key)){e.preventDefault();prev();}
+    else if(e.key==="Home"){go(0);}
+    else if(e.key==="End"){go(slides.length-1);}
+    else if(e.key.toLowerCase()==="f"){
+      if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+    else if(e.key.toLowerCase()==="n"){
+      notes.classList.toggle("show");
+      render();
+    }
+  });
+
+  let x0 = null;
+  addEventListener("touchstart",(e)=>x0=e.touches[0].clientX);
+  addEventListener("touchend",(e)=>{
+    if(x0===null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if(Math.abs(dx)>50) (dx<0 ? next : prev)();
+    x0 = null;
+  });
+
+  render();
+</script>
+</body>
+</html>

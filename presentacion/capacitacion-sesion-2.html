@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión 2 · CLI, Testnet y Contratos</title>
+<style>
+  :root{
+    --bg:#0e0d13;
+    --bg2:#15131d;
+    --ink:#f5f4fa;
+    --muted:#a2a0b0;
+    --brand:#9b7bff;
+    --brand-soft:rgba(155,123,255,.14);
+    --ok:#66e3c4;
+    --warn:#ffd23f;
+    --card:rgba(255,255,255,.045);
+    --line:rgba(255,255,255,.13);
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);background:linear-gradient(180deg,var(--bg),var(--bg2));color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+
+  .bg-grid{
+    position:fixed;inset:-2px;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(155,123,255,.07) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(155,123,255,.07) 1px,transparent 1px);
+    background-size:54px 54px;
+    -webkit-mask-image:radial-gradient(ellipse 90% 80% at 50% 45%,#000 35%,transparent 88%);
+    mask-image:radial-gradient(ellipse 90% 80% at 50% 45%,#000 35%,transparent 88%);
+    animation:gridDrift 24s linear infinite;
+  }
+  @keyframes gridDrift{from{background-position:0 0,0 0}to{background-position:54px 54px,54px 54px}}
+  .bg-scan{
+    position:fixed;top:0;left:0;right:0;height:1px;z-index:0;pointer-events:none;
+    background:rgba(255,210,63,.45);
+    box-shadow:0 0 16px 1px rgba(255,210,63,.45);
+    opacity:0;animation:scan 9s ease-in-out infinite;
+  }
+  @keyframes scan{0%{transform:translateY(0);opacity:0}8%{opacity:.75}45%{opacity:.3}90%{opacity:0}100%{transform:translateY(100vh);opacity:0}}
+  .bg{
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(circle at 14% 18%, rgba(155,123,255,.16), transparent 34%),
+      radial-gradient(circle at 82% 76%, rgba(102,227,196,.11), transparent 36%);
+  }
+
+  .deck{position:relative;z-index:1;height:100vh;width:100vw}
+  .slide{
+    position:absolute;inset:0;display:none;opacity:0;overflow:auto;
+    padding:clamp(28px,5vw,72px);
+    transform:translateY(24px) scale(.985);
+    justify-content:center;
+    align-items:center;
+    gap:14px;
+  }
+  .slide.active{display:flex;flex-direction:column;animation:slideIn .45s cubic-bezier(.2,.85,.3,1) both}
+  @keyframes slideIn{from{opacity:0;transform:translateY(24px) scale(.985)}to{opacity:1;transform:none}}
+  .slide.active>*{animation:contentIn .45s ease both}
+  .slide.active>*:nth-child(2){animation-delay:.08s}
+  .slide.active>*:nth-child(3){animation-delay:.16s}
+  .slide.active>*:nth-child(4){animation-delay:.24s}
+  @keyframes contentIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  .tag{
+    display:inline-block;
+    font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:#d7cbff;
+    border:1px solid rgba(155,123,255,.45);
+    background:var(--brand-soft);
+    border-radius:999px;
+    padding:7px 12px;
+    margin-bottom:16px;
+  }
+  .pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:8px 14px;border-radius:999px;
+    border:1px solid var(--line);background:rgba(255,255,255,.04);
+    color:var(--ink);font-size:14px;font-weight:600;
+  }
+  .pill::before{content:"";width:7px;height:7px;border-radius:50%;background:#c4abff}
+  h1{font-size:clamp(40px,6.4vw,78px);line-height:1.03;letter-spacing:-.03em;margin-bottom:12px}
+  h2{font-size:clamp(30px,4.6vw,56px);line-height:1.07;letter-spacing:-.02em;margin-bottom:16px}
+  h3{font-size:clamp(20px,2.4vw,28px);margin-bottom:8px}
+  p{font-size:clamp(18px,1.85vw,24px);line-height:1.45;color:var(--muted)}
+  .lead{max-width:72ch}
+  .brand{color:var(--brand)}
+  .ok{color:var(--ok);font-weight:700}
+  .warn{color:var(--warn);font-weight:700}
+
+  .grid{display:grid;gap:16px;margin-top:16px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px;
+    backdrop-filter:blur(5px);
+  }
+  .card p{font-size:clamp(16px,1.5vw,20px)}
+  .big{font-size:clamp(32px,3.8vw,48px);font-weight:800;color:#c4abff;line-height:1}
+  .small{font-size:clamp(14px,1.2vw,18px);color:var(--muted)}
+
+  ul.clean{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:10px}
+  ul.clean li{display:flex;gap:10px;color:var(--muted);font-size:clamp(17px,1.7vw,22px);line-height:1.42}
+  ul.clean li::before{content:"▸";color:var(--brand);font-weight:800}
+  ul.clean b{color:var(--ink)}
+
+  .table{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(255,255,255,.03);margin-top:10px}
+  .row{display:grid;grid-template-columns:1.1fr 1.4fr;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .row div{padding:12px 14px;font-size:clamp(15px,1.45vw,19px)}
+  .l{font-weight:700}
+  .r{color:var(--muted)}
+
+  .flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .node{background:rgba(255,255,255,.03);border:1px solid var(--line);padding:10px 12px;border-radius:10px;font-size:clamp(14px,1.2vw,18px);font-weight:700}
+  .node.hot{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand)}
+  .arrow{font-family:var(--mono);color:#ffd23f;font-size:22px}
+
+  .steps{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+  .step{display:flex;gap:12px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .n{width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:9px;background:var(--brand-soft);border:1px solid rgba(155,123,255,.5);font-weight:800;color:#d7cbff;font-family:var(--mono)}
+  .step p{font-size:clamp(16px,1.5vw,20px)}
+  .cmd{display:block;font-family:var(--mono);color:var(--warn);font-size:clamp(13px,1.35vw,17px);margin-bottom:4px;word-break:break-word}
+
+  pre{
+    background:#08070d;border:1px solid var(--line);border-radius:14px;
+    padding:16px 18px;overflow:auto;font-family:var(--mono);
+    font-size:clamp(13px,1.25vw,16px);line-height:1.65;color:#e8e2ff;
+  }
+  .win{display:flex;gap:7px;margin-bottom:12px}
+  .win i{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .win i:nth-child(1){background:#5b5566}.win i:nth-child(2){background:#7a7286}.win i:nth-child(3){background:#9b7bff}
+  code{font-family:var(--mono);color:#d7cbff}
+  .c{color:#6a6678;font-style:italic}
+  .k{color:#c4abff}
+  .f{color:#ffd23f}
+
+  .footer{
+    position:fixed;left:0;right:0;bottom:0;height:48px;z-index:8;
+    background:rgba(14,13,19,.96);border-top:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;padding:0 14px;
+    font-size:12px;color:var(--muted);
+  }
+  .controls{display:flex;align-items:center;gap:10px}
+  button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);cursor:pointer}
+  button:hover{border-color:rgba(155,123,255,.5)}
+  .notes{
+    position:fixed;left:0;right:0;bottom:48px;max-height:36vh;overflow:auto;z-index:9;
+    background:rgba(14,13,19,.98);border-top:1px solid var(--line);padding:14px;
+    color:var(--muted);font-size:15px;display:none;line-height:1.5;
+  }
+  .notes.show{display:block}
+  .hint{position:fixed;top:16px;right:20px;z-index:8;font-family:var(--mono);font-size:12px;color:rgba(162,160,176,.8)}
+  .chrome{position:fixed;left:0;right:0;bottom:48px;height:5px;background:rgba(255,255,255,.08);z-index:8}
+  .bar{height:100%;width:0;background:linear-gradient(90deg,#9b7bff,#66e3c4);transition:width .35s ease}
+
+  .slide > *{width:min(1320px,100%);margin-left:auto;margin-right:auto}
+  .slide > h1,.slide > h2,.slide > p.lead{max-width:1200px}
+
+  @media(max-width:980px){
+    .g2,.g3{grid-template-columns:1fr}
+    .row{grid-template-columns:1fr}
+    .slide{justify-content:flex-start}
+    .slide > *{width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-scan"></div>
+<div class="bg"></div>
+<div class="hint">← → espacio · F · N</div>
+<div class="deck">
+
+  <section class="slide active" data-notes="Hoy no hay teoría larga. Laptop abierta, Testnet, repo Stellar-Guide. Receta viva: docs/comandos-basicos.md. Identidades: profe y alumno. Nunca proyectes stellar keys secret.">
+    <div class="tag">Sesión 2 · Bloque técnico</div>
+    <h1>De la terminal al <span class="brand">contrato vivo</span></h1>
+    <p class="lead">Testnet, Stellar CLI 25, build, deploy e invoke. Casos de campus y un poco de DeFi. El alumno es una <code>Address</code>; el profesor firma como <code>admin</code>.</p>
+    <div class="pills">
+      <span class="pill">CLI 25</span>
+      <span class="pill">Testnet</span>
+      <span class="pill">WASM</span>
+      <span class="pill">Campus</span>
+      <span class="pill">DeFi lab</span>
+    </div>
+    <div class="grid g3">
+      <div class="card"><div class="big">Pagar</div><div class="small">Cuentas, stroops, Friendbot</div></div>
+      <div class="card"><div class="big">Desplegar</div><div class="small">test → build → deploy → initialize</div></div>
+      <div class="card"><div class="big">Invocar</div><div class="small">Todo lo que va después de --</div></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Checklist de 5 minutos. Si stellar doctor falla, no sigas. Red: testnet. Repo en la raíz Stellar-Guide.">
+    <div class="tag">Arranque</div>
+    <h2>Antes de tocar un contrato</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div><span class="cmd">stellar --version</span><p>Esperamos CLI 23+ (este material está afinado a <b>25</b>).</p></div></div>
+      <div class="step"><div class="n">2</div><div><span class="cmd">stellar network use testnet</span><p>O pasa <code>--network testnet</code> en cada comando.</p></div></div>
+      <div class="step"><div class="n">3</div><div><span class="cmd">stellar keys generate --fund profe --network testnet</span><p>Friendbot fondea. Repite con <code>alumno</code>.</p></div></div>
+      <div class="step"><div class="n">4</div><div><span class="cmd">stellar keys public-key profe</span><p>Empieza con <code>G…</code>. La secreta empieza con <code>S…</code> — no la muestres.</p></div></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Tabla de stroops en la pizarra. 1 XLM = 10 millones. En tx new payment el amount es stroops. En el SDK JS el amount es string en XLM. Esa confusión sale siempre.">
+    <div class="tag">Unidades</div>
+    <h2>Stroops, aliases, Testnet</h2>
+    <div class="table">
+      <div class="row"><div class="l">1 XLM</div><div class="r"><code>10_000_000</code> stroops</div></div>
+      <div class="row"><div class="l">10 XLM</div><div class="r"><code>100_000_000</code> stroops</div></div>
+      <div class="row"><div class="l">Alias</div><div class="r"><code>profe</code>, <code>alumno</code> — no pegues secretas en slides</div></div>
+      <div class="row"><div class="l">CLI 25</div><div class="r">No existe <code>stellar account show</code>. Usa Horizon o <code>keys public-key</code></div></div>
+    </div>
+    <p class="lead" style="margin-top:16px"><span class="warn">En clase:</span> un pago de <code>--amount 100</code> no es 100 XLM. Son 100 stroops.</p>
+  </section>
+
+  <section class="slide" data-notes="Demo en vivo. create-account si bob no existe. Si ya está fondeado con Friendbot, basta payment. Verificar con curl Horizon.">
+    <div class="tag">Lab 0 · Pago</div>
+    <h2>Mueve 1 XLM en Testnet</h2>
+    <pre><div class="win"><i></i><i></i><i></i></div>stellar tx new payment \
+  --source profe \
+  --destination alumno \
+  --asset native \
+  --amount 10_000_000 \
+  --network testnet</pre>
+    <p class="lead">Confirmación en ~3–5 s. Luego: <code>curl</code> a Horizon con la <code>G…</code> de <code>alumno</code>.</p>
+  </section>
+
+  <section class="slide" data-notes="El patrón se repite en attendance, voting, grades, loan. Leer → reglas → escribir → Result. require_auth es quién debe firmar.">
+    <div class="tag">Soroban</div>
+    <h2>Todo contrato es el mismo patrón</h2>
+    <div class="flow">
+      <div class="node">Leer storage</div><span class="arrow">→</span>
+      <div class="node hot">Reglas + auth</div><span class="arrow">→</span>
+      <div class="node">Escribir storage</div><span class="arrow">→</span>
+      <div class="node">Ok o error</div>
+    </div>
+    <div class="grid g2">
+      <div class="card"><h3>Admin</h3><p>Abre sesión, crea propuesta, registra nota. Firma <code>profe</code>.</p></div>
+      <div class="card"><h3>Usuario</h3><p>Vota, se inscribe, toma un libro. Firma <code>alumno</code>.</p></div>
+    </div>
+    <p class="lead"><code>#![no_std]</code> · <code>#[contract]</code> · <code>#[contractimpl]</code> · <code>Env</code></p>
+  </section>
+
+  <section class="slide" data-notes="Pipeline en pizarra. Tests no necesitan red. WASM en wasm32v1-none. initialize UNA vez. Error #1 = NotInitialized.">
+    <div class="tag">Ciclo de vida</div>
+    <h2>Test → build → deploy → initialize → invoke</h2>
+    <div class="steps">
+      <div class="step"><div class="n">T</div><div><span class="cmd">cargo test --manifest-path contracts/attendance/Cargo.toml</span><p>Sin red. Si esto falla, no despliegues.</p></div></div>
+      <div class="step"><div class="n">B</div><div><span class="cmd">stellar contract build --manifest-path contracts/attendance/Cargo.toml</span><p>Sale <code>target/wasm32v1-none/release/attendance.wasm</code></p></div></div>
+      <div class="step"><div class="n">D</div><div><span class="cmd">stellar contract deploy --wasm … --source profe --network testnet</span><p>Imprime un ID <code>C…</code>. Cópialo.</p></div></div>
+      <div class="step"><div class="n">I</div><div><span class="cmd">invoke --id C… -- … initialize --admin profe</span><p>Una vez. Después ya puedes abrir sesión o votar.</p></div></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="El doble dash es el error #1 de ergonomía. wasm viejo es el error #1 de paths. Strings: comillas internas.">
+    <div class="tag">CLI · trampas</div>
+    <h2>Lo que va <span class="brand">después de --</span></h2>
+    <pre><div class="win"><i></i><i></i><i></i></div>stellar contract invoke --id $ID \
+  --source profe --network testnet -- \
+  open_session --course '"Redes"' --topic '"Ledger"'</pre>
+    <div class="table">
+      <div class="row"><div class="l"><code>--</code></div><div class="r">Separa flags de la CLI de los args del contrato</div></div>
+      <div class="row"><div class="l">WASM</div><div class="r"><code>wasm32v1-none</code> — no <code>wasm32-unknown-unknown</code></div></div>
+      <div class="row"><div class="l">Strings</div><div class="r"><code>' "texto" '</code> en course, title, assignment</div></div>
+      <div class="row"><div class="l">Error <code>#1</code></div><div class="r">Casi siempre falta <code>initialize</code> o el <code>--id</code> es otro deploy</div></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Primer contrato campus. Demo completa. mark_present dos veces debe fallar AlreadyMarked. Pregunta a la sala: ¿quién debería poder marcar? Aquí el admin. Variante: el alumno se marca a sí mismo.">
+    <div class="tag">Lab 1 · Campus</div>
+    <h2>Asistencia · <code>contracts/attendance</code></h2>
+    <div class="grid g3">
+      <div class="card"><h3>open_session</h3><p>Curso + tema. Devuelve <code>session_id</code>.</p></div>
+      <div class="card"><h3>mark_present</h3><p>El profe marca al alumno. No se puede dos veces.</p></div>
+      <div class="card"><h3>attendance_count</h3><p>Acumulado por <code>Address</code>.</p></div>
+    </div>
+    <pre><div class="win"><i></i><i></i><i></i></div>stellar contract invoke --id $ID --source profe --network testnet -- \
+  mark_present --session_id 1 --student alumno</pre>
+  </section>
+
+  <section class="slide" data-notes="El alumno firma el voto. Un voto por address. Cerrar propuesta y leer yes/no. Comparar con urna de papel: aquí el resultado es consultable.">
+    <div class="tag">Lab 2 · Campus</div>
+    <h2>Votación · <code>contracts/voting</code></h2>
+    <div class="flow">
+      <div class="node">create_proposal</div><span class="arrow">→</span>
+      <div class="node hot">vote (alumno)</div><span class="arrow">→</span>
+      <div class="node">close_proposal</div><span class="arrow">→</span>
+      <div class="node">get_proposal</div>
+    </div>
+    <ul class="clean">
+      <li><div><b>Una clave = un voto.</b> El segundo <code>vote</code> del mismo address falla.</div></li>
+      <li><div><b>Quién firma:</b> <code>--source alumno</code> y <code>--voter alumno</code>.</div></li>
+      <li><div><b>Para clase:</b> propuesta real (“¿laboratorio en Testnet?”).</div></li>
+    </ul>
+  </section>
+
+  <section class="slide" data-notes="Solo admin escribe. El alumno lee. score > max_score = InvalidScore. Privacidad: no pongas nombre real on-chain, solo Address.">
+    <div class="tag">Lab 3 · Campus</div>
+    <h2>Calificaciones · <code>contracts/grades</code></h2>
+    <pre><div class="win"><i></i><i></i><i></i></div>stellar contract invoke --id $ID --source profe --network testnet -- \
+  record_grade --student alumno --assignment '"Lab-1"' \
+  --score 85 --max_score 100
+
+stellar contract invoke --id $ID --source alumno --network testnet -- \
+  get_grade --student alumno --assignment '"Lab-1"'</pre>
+    <p class="lead"><span class="ok">Roles:</span> escribir restringido, leer público. Validación on-chain: <code>score ≤ max_score</code>.</p>
+  </section>
+
+  <section class="slide" data-notes="Estados y cupos. Si el tiempo aprieta, elige uno de los dos. library: available llega a 0. enrollment: CourseFull.">
+    <div class="tag">Labs extra · Campus</div>
+    <h2>Estados y cupos</h2>
+    <div class="grid g2">
+      <div class="card">
+        <h3>library</h3>
+        <p>Títulos con copias. El alumno <code>checkout</code> / <code>return_copy</code>. Un préstamo por título y address.</p>
+        <p class="small">Máquina de estados: disponible → prestado → devuelto</p>
+      </div>
+      <div class="card">
+        <h3>enrollment</h3>
+        <p>Curso con <code>capacity</code>. <code>enroll</code> / <code>drop_course</code>. Cupo lleno → error.</p>
+        <p class="small">Límites: el contrato dice que no, aunque el Excel sí</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="SAC nativo Testnet. Los contratos DeFi no mueven 'números mágicos': hacen token.transfer. escrow es el puente campus→tokens.">
+    <div class="tag">Tokens</div>
+    <h2>Cuando el contrato mueve valor</h2>
+    <p class="lead">XLM en Soroban entra por el <span class="ok">Stellar Asset Contract</span> (SAC). En Testnet:</p>
+    <pre>CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC</pre>
+    <div class="grid g3">
+      <div class="card"><h3>escrow</h3><p>El pagador bloquea; el árbitro libera o reembolsa.</p></div>
+      <div class="card"><h3>loan</h3><p>Colateral entra al contrato; la deuda sale del pool.</p></div>
+      <div class="card"><h3>amm</h3><p><code>x · y = k</code>. Más A entra → menos B sale.</p></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Demo escrow con 1 XLM. initialize con token SAC. lock con alice/profe. release vs refund. DealClosed al repetir.">
+    <div class="tag">Lab 4 · Depósito</div>
+    <h2>Escrow · el profe es árbitro</h2>
+    <div class="flow">
+      <div class="node">lock (pagador)</div><span class="arrow">→</span>
+      <div class="node hot">tokens en el contrato</div><span class="arrow">→</span>
+      <div class="node">release | refund</div>
+    </div>
+    <pre><div class="win"><i></i><i></i><i></i></div>stellar contract invoke --id $ID --source profe --network testnet -- \
+  initialize --arbiter profe --token CDLZFC3S…YSC
+
+stellar contract invoke --id $ID --source alice --network testnet -- \
+  lock --payer alice --payee alumno --amount 10000000
+
+stellar contract invoke --id $ID --source profe --network testnet -- \
+  release --deal_id 1</pre>
+  </section>
+
+  <section class="slide" data-notes="loan mejorado: transfers reales. min_collateral_bps 15000 = 150%. Demo: create_position, borrow, try overborrow, set_min_collateral_bps 20000, liquidate. Sin oráculo: subes el umbral a propósito.">
+    <div class="tag">Lab 5 · DeFi</div>
+    <h2>Préstamo · colateral y liquidación</h2>
+    <div class="grid g2">
+      <div class="card"><h3>Sano</h3><p>colateral × 10000 ≥ deuda × min_bps. Con 150% no puedes pedir de más.</p></div>
+      <div class="card"><h3>Liquidable</h3><p>El admin sube el umbral. Un tercero paga la deuda y se queda el colateral.</p></div>
+    </div>
+    <ul class="clean">
+      <li><div><code>create_position</code> transfiere tokens al contrato.</div></li>
+      <li><div><code>borrow</code> / <code>repay</code> mueven SAC de verdad.</div></li>
+      <li><div><code>set_min_collateral_bps</code> + <code>liquidate</code> = demo sin oráculo.</div></li>
+    </ul>
+  </section>
+
+  <section class="slide" data-notes="Si hay tiempo. add_liquidity 10000/20000, swap 1000 → 1818. k se conserva aproximadamente. Slippage: el precio se mueve contra ti.">
+    <div class="tag">Lab 6 · DeFi</div>
+    <h2>AMM · producto constante</h2>
+    <p class="lead"><code>amount_out = amount_in × reserve_b / (reserve_a + amount_in)</code></p>
+    <div class="table">
+      <div class="row"><div class="l">Reservas</div><div class="r">10 000 A · 20 000 B</div></div>
+      <div class="row"><div class="l">Swap 1 000 A</div><div class="r">Sale 1 818 B — no 2 000</div></div>
+      <div class="row"><div class="l">Por qué</div><div class="r">El pool se mueve; eso es slippage</div></div>
+    </div>
+    <p class="lead" style="margin-top:12px">También en el repo: <code>yield</code> (shares), <code>payroll</code>, <code>savings</code>, <code>food-trace</code>.</p>
+  </section>
+
+  <section class="slide" data-notes="Deja esta slide abierta mientras desbloquean. Receta completa en docs/comandos-basicos.md.">
+    <div class="tag">Cuando se traba</div>
+    <h2>Errores que van a salir hoy</h2>
+    <div class="table">
+      <div class="row"><div class="l">error #1</div><div class="r">Falta <code>initialize</code> o el <code>--id</code> es de otro deploy</div></div>
+      <div class="row"><div class="l">cannot find wasm</div><div class="r">Ruta <code>wasm32-unknown-unknown</code> — usa <code>wasm32v1-none</code></div></div>
+      <div class="row"><div class="l">account</div><div class="r">CLI 25 no tiene <code>stellar account</code></div></div>
+      <div class="row"><div class="l">Auth / simulation</div><div class="r"><code>--source</code> no es quien debe firmar</div></div>
+      <div class="row"><div class="l">Strings rotos</div><div class="r">Faltan comillas internas en <code>--course</code> / <code>--title</code></div></div>
+    </div>
+  </section>
+
+  <section class="slide" data-notes="Cierre pedagógico corto. Cómo llevarlo a su materia: un lab de 50 min = attendance. Un proyecto = enrollment + grades. No PII on-chain.">
+    <div class="tag">Para el aula</div>
+    <h2>Cómo se enseña esto la semana que viene</h2>
+    <div class="grid g3">
+      <div class="card"><h3>50 min</h3><p>Pago + un contrato sin tokens (<code>attendance</code> o <code>voting</code>).</p></div>
+      <div class="card"><h3>Unidad</h3><p>Tres contratos campus + un error forzado (doble voto, cupo lleno).</p></div>
+      <div class="card"><h3>Proyecto</h3><p>Inscripción + nota + certificado. Identidad = <code>Address</code>, no nombre.</p></div>
+    </div>
+    <p class="lead">Material: <code>docs/comandos-basicos.md</code> · contratos en <code>contracts/</code></p>
+  </section>
+
+  <section class="slide" data-notes="Reto concreto. Que salgan con un C… en el chat o en una nota. Pregunta: qué proceso de su facultad pondrían on-chain primero.">
+    <div class="tag">Cierre</div>
+    <h1>Salen con un ID <span class="brand">C…</span></h1>
+    <ul class="clean">
+      <li><div>Un pago en Testnet y dos identidades (<code>profe</code> / <code>alumno</code>).</div></li>
+      <li><div>Un contrato campus desplegado e inicializado.</div></li>
+      <li><div>Una invocación que cambia estado y otra que solo lee.</div></li>
+      <li><div>Si alcanzó: escrow o liquidación de <code>loan</code>.</div></li>
+    </ul>
+    <p class="lead"><span class="ok">Reto:</span> mañana, en su materia, repetir el lab de asistencia con dos alumnos reales (dos keys).</p>
+  </section>
+
+</div>
+
+<div class="notes" id="notes"></div>
+<div class="chrome"><div class="bar" id="bar"></div></div>
+<div class="footer">
+  <div>Sesión 2 · CLI, Testnet y Contratos</div>
+  <div class="controls">
+    <button id="prev" aria-label="Anterior">‹</button>
+    <span id="count">1 / 18</span>
+    <button id="next" aria-label="Siguiente">›</button>
+    <span>← → Espacio · F · N</span>
+  </div>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  const notes = document.getElementById("notes");
+  const count = document.getElementById("count");
+  const bar = document.getElementById("bar");
+  let i = 0;
+
+  function render(){
+    slides.forEach((s,n)=>s.classList.toggle("active", n===i));
+    count.textContent = `${i+1} / ${slides.length}`;
+    bar.style.width = ((i+1)/slides.length*100) + "%";
+    if(notes.classList.contains("show")){
+      notes.innerHTML = slides[i].dataset.notes || "Sin notas.";
+    }
+  }
+  function go(n){ i = Math.max(0, Math.min(slides.length-1, n)); render(); }
+  const next = ()=>go(i+1);
+  const prev = ()=>go(i-1);
+
+  document.getElementById("next").onclick = next;
+  document.getElementById("prev").onclick = prev;
+
+  document.addEventListener("keydown",(e)=>{
+    if(["ArrowRight","PageDown"," "].includes(e.key)){e.preventDefault();next();}
+    else if(["ArrowLeft","PageUp"].includes(e.key)){e.preventDefault();prev();}
+    else if(e.key==="Home"){go(0);}
+    else if(e.key==="End"){go(slides.length-1);}
+    else if(e.key.toLowerCase()==="f"){
+      if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+    else if(e.key.toLowerCase()==="n"){
+      notes.classList.toggle("show");
+      render();
+    }
+  });
+
+  let x0 = null;
+  addEventListener("touchstart",(e)=>x0=e.touches[0].clientX);
+  addEventListener("touchend",(e)=>{
+    if(x0===null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if(Math.abs(dx)>50) (dx<0 ? next : prev)();
+    x0 = null;
+  });
+
+  render();
+</script>
+</body>
+</html>

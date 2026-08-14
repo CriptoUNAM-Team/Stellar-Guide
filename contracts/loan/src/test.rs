@@ -17,6 +17,7 @@ fn setup() -> (Env, Address, Address, Address, Address, LoanContractClient<'stat
     let sac = StellarAssetClient::new(&env, &token_addr.address());
     let contract_id = env.register(LoanContract, ());
     sac.mint(&contract_id, &20_000);
+    sac.mint(&borrower, &10_000);
     let client = LoanContractClient::new(&env, &contract_id);
     client.initialize(&admin, &token_addr.address(), &15_000);
     (env, admin, borrower, token_addr.address(), contract_id, client)
@@ -35,8 +36,8 @@ fn test_borrow_and_repay() {
     assert_eq!(p2.debt, 1_500);
 
     let token = TokenClient::new(&env, &token_addr);
-    assert_eq!(token.balance(&borrower), 1_500);
-    assert_eq!(token.balance(&contract_id), 20_000 - 1_500);
+    assert_eq!(token.balance(&borrower), 10_000 - 3_000 + 2_000 - 500);
+    assert_eq!(token.balance(&contract_id), 20_000 + 3_000 - 2_000 + 500);
 }
 
 #[test]
@@ -49,11 +50,34 @@ fn test_cannot_overborrow() {
 
 #[test]
 fn test_close_position_when_debt_zero() {
-    let (_, _, borrower, _, _, client) = setup();
+    let (env, _, borrower, token_addr, _, client) = setup();
     let pos = client.create_position(&borrower, &2_000);
     client.borrow(&pos, &1_000);
     client.repay(&pos, &1_000);
     client.close_position(&pos);
     let p = client.get_position(&pos);
     assert_eq!(p.active, false);
+    let token = TokenClient::new(&env, &token_addr);
+    assert_eq!(token.balance(&borrower), 10_000);
+}
+
+#[test]
+fn test_liquidate_after_threshold_hike() {
+    let (env, _admin, borrower, token_addr, _, client) = setup();
+    let liquidator = Address::generate(&env);
+    StellarAssetClient::new(&env, &token_addr).mint(&liquidator, &5_000);
+
+    let pos = client.create_position(&borrower, &3_000);
+    client.borrow(&pos, &2_000);
+    assert_eq!(client.is_liquidatable(&pos), false);
+
+    client.set_min_collateral_bps(&20_000);
+    assert_eq!(client.is_liquidatable(&pos), true);
+
+    client.liquidate(&liquidator, &pos);
+    let p = client.get_position(&pos);
+    assert_eq!(p.active, false);
+    assert_eq!(p.debt, 0);
+    let token = TokenClient::new(&env, &token_addr);
+    assert_eq!(token.balance(&liquidator), 5_000 - 2_000 + 3_000);
 }

@@ -22,7 +22,8 @@
 - Bóveda de rendimiento (yield por shares)
 - NFTs de membresía/certificados
 - Referencia: [Contratos Soroban por Casos de Uso](contratos-casos-uso.md)
-- Implementaciones iniciales: `contracts/payroll` y `contracts/savings`
+- Campus: asistencia, votación, calificaciones, biblioteca, inscripción, escrow
+- Implementaciones: ver `contracts/` y [Comandos básicos](comandos-basicos.md)
 
 ## 3. Patrones y seguridad
 - Gestión de claves y permisos
