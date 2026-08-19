@@ -22,6 +22,17 @@ semana, labs calificados, banco de quizzes, rúbricas y proyecto final.
 
 El curso reutiliza los `docs/`, `contracts/` y `examples/` de este repo como material de laboratorio.
 
+## 💡 Ideathon de 1 día (formato evento)
+
+¿Necesitas un **evento corto** en lugar de un curso? En [`ideathon/`](ideathon/README.md) está el paquete
+completo para correr un ideathon de 8 horas orientado a negocio y casos de uso, donde cada equipo entrega
+su idea como Pull Request y la participación se mide con **commits reales**.
+
+- **Temario de 8 h:** [ideathon/temario.md](ideathon/temario.md) · versión en página: [ideathon/plan-de-trabajo.html](ideathon/plan-de-trabajo.html)
+- **Cómo se mide (commits, PRs, leaderboard):** [ideathon/metricas.md](ideathon/metricas.md)
+- **Guía de GitHub para asistentes no técnicos:** [ideathon/guia-github-participantes.md](ideathon/guia-github-participantes.md)
+- **Semilla del repo del evento + scripts:** [ideathon/repo-participantes](ideathon/repo-participantes), [ideathon/scripts](ideathon/scripts)
+
 **Presentaciones (HTML, tecla N = notas):**
 
 - Programa para docentes: [`presentacion/docentes.html`](presentacion/docentes.html)
@@ -166,15 +177,15 @@ Invoke y WASM (`wasm32v1-none`): [docs/comandos-basicos.md](docs/comandos-basico
 
 ## Frontend para probar contratos
 
-Si quieres testear contratos desde UI (en vez de solo CLI), usa esta guía:
+UI lista en [`frontend/`](frontend/README.md): abre `attendance.html` ya ligada a
 
-- [docs/frontend-contratos.md](docs/frontend-contratos.md)
+`CBQ2RV6RGJMGOJGJRMV6JFCYIVMBQNPDGUNW57I2YJCG2RQU5T7MD2BO`
 
-Incluye:
-- estructura mínima de frontend,
-- setup de SDK,
-- ejemplo de invocación de contrato,
-- ejemplo de UI con botón de ejecución.
+```bash
+cd frontend && python3 -m http.server 8080
+```
+
+Al desplegar otro contrato, pega el `C…` en la página y **Guardar ID**. Detalle de SDK: [docs/frontend-contratos.md](docs/frontend-contratos.md).
 
 ## Flujos Mermaid clave
 

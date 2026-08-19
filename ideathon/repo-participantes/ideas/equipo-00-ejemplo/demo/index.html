@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Factura Lista — adelanta el cobro de tus facturas</title>
+
+<style>
+/* Paleta del ejemplo. La perilla es --marca. */
+:root {
+  --marca: #1B4F8C;   /* azul industrial */
+
+  --acento:     var(--marca);
+  --fondo:      #FBFBF9;
+  --superficie: #FFFFFF;
+  --tinta:      #16191C;
+  --tinta-suave:#5A6169;
+  --borde:      #E1E3DE;
+  --acento-luz: color-mix(in srgb, var(--acento) 10%, transparent);
+  --radio: 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo:      #121417;
+    --superficie: #1A1D21;
+    --tinta:      #E8EAE6;
+    --tinta-suave:#9BA3AB;
+    --borde:      #2A2F35;
+    /* en oscuro el color de marca se aclara para que siga leyéndose */
+    --acento:     color-mix(in srgb, var(--marca) 68%, white);
+  }
+}
+
+/* De aquí para abajo casi no necesitas tocar nada.
+   Si algo se ve raro, es más rápido pedirle ayuda a un mentor que adivinar. */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.marco { max-width: 62rem; margin: 0 auto; padding: 0 1.25rem 4rem; }
+
+h1 { font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1.08; margin: 0 0 .75rem; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 0 0 1rem; letter-spacing: -.01em; }
+h3 { font-size: 1rem; margin: 0 0 .4rem; }
+p  { margin: 0 0 1rem; }
+p:last-child { margin-bottom: 0; }
+
+.chip {
+  display: inline-block;
+  font-size: .74rem;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  font-weight: 600;
+  color: var(--acento);
+  background: var(--acento-luz);
+  border: 1px solid var(--acento);
+  border-radius: 100px;
+  padding: .2rem .7rem;
+}
+
+section { padding: 3rem 0 0; }
+
+.rotulo {
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  font-weight: 700;
+  color: var(--acento);
+  margin: 0 0 .6rem;
+}
+
+/* ---------- portada ---------- */
+header.portada {
+  padding: 3.5rem 0 1rem;
+  border-bottom: 1px solid var(--borde);
+}
+.entrada { font-size: clamp(1.05rem, 2.4vw, 1.3rem); color: var(--tinta-suave); max-width: 38ch; }
+
+/* ---------- tarjetas ---------- */
+.cuadricula {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+}
+.tarjeta {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 1.1rem 1.2rem;
+}
+.tarjeta .dato {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--acento);
+  font-variant-numeric: tabular-nums;
+  display: block;
+  line-height: 1.1;
+}
+.tarjeta .pie { font-size: .88rem; color: var(--tinta-suave); margin: .3rem 0 0; }
+
+/* ---------- antes / después ---------- */
+.comparacion { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 40rem) { .comparacion { grid-template-columns: 1fr; } }
+.comparacion ul { margin: 0; padding-left: 1.1rem; color: var(--tinta-suave); font-size: .95rem; }
+.comparacion li { margin-bottom: .45rem; }
+.despues { border-color: var(--acento); }
+.despues h3 { color: var(--acento); }
+
+/* ---------- simulador ---------- */
+.simulador {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  overflow: hidden;
+}
+.barra { height: 4px; background: var(--borde); }
+.barra i { display: block; height: 100%; background: var(--acento); width: 0; transition: width .35s ease; }
+
+.escenario { padding: 1.75rem 1.5rem; min-height: 11rem; }
+.paso-num {
+  font-size: .74rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  font-weight: 600;
+  margin: 0 0 .5rem;
+}
+.paso-actor { font-size: 1.25rem; font-weight: 700; margin: 0 0 .35rem; letter-spacing: -.01em; }
+.paso-detalle { color: var(--tinta-suave); margin: 0; max-width: 52ch; }
+
+.sello-onchain[hidden] { display: none; }
+
+.sello-onchain {
+  display: inline-block;
+  margin-top: .9rem;
+  font-size: .74rem;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--acento);
+  border: 1px dashed var(--acento);
+  border-radius: 100px;
+  padding: .2rem .65rem;
+}
+
+.controles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  align-items: center;
+  border-top: 1px solid var(--borde);
+  padding: .9rem 1.5rem;
+}
+button {
+  font: inherit;
+  font-weight: 600;
+  font-size: .93rem;
+  cursor: pointer;
+  border-radius: var(--radio);
+  padding: .55rem 1.1rem;
+  border: 1px solid var(--acento);
+  background: var(--acento);
+  color: #fff;
+}
+button.fantasma { background: transparent; color: var(--acento); }
+button:disabled { opacity: .4; cursor: not-allowed; }
+button:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; }
+
+/* ---------- pie ---------- */
+footer {
+  margin-top: 4rem;
+  border-top: 1px solid var(--borde);
+  padding-top: 1.25rem;
+  font-size: .86rem;
+  color: var(--tinta-suave);
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1.5rem;
+  justify-content: space-between;
+}
+a { color: var(--acento); }
+</style>
+</head>
+
+<body>
+<div class="marco">
+
+<!-- La portada -->
+<header class="portada">
+  <span class="chip">Liquidez y factoraje</span>
+  <h1 style="margin-top:1rem">Factura Lista</h1>
+  <p class="entrada">
+    Cobra hoy la factura que tu cliente te va a pagar en 90 días,
+    sin expediente bancario y a la mitad de la tasa.
+  </p>
+</header>
+
+<!-- El problema -->
+<section>
+  <p class="rotulo">El problema</p>
+  <h2 style="max-width:24ch">
+    Un proveedor de autopartes entrega hoy y cobra en 90 días.
+    Para aguantar, paga factoraje al 28 % anual.
+  </h2>
+
+  <div class="cuadricula" style="margin-top:1.5rem">
+    <div class="tarjeta">
+      <span class="dato">90 días</span>
+      <p class="pie">Lo que tarda la armadora en pagarle a su proveedor Tier 2.</p>
+    </div>
+    <div class="tarjeta">
+      <span class="dato">28 %</span>
+      <p class="pie">Tasa anual del factoraje bancario para una PyME industrial.</p>
+    </div>
+    <div class="tarjeta">
+      <span class="dato">400</span>
+      <p class="pie">Proveedores alcanzables en el corredor del Bajío vía CANACINTRA.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Antes y después -->
+<section>
+  <p class="rotulo">Cómo cambia</p>
+  <div class="comparacion">
+    <div class="tarjeta">
+      <h3>Hoy</h3>
+      <ul>
+        <li>Expediente bancario de 2 a 3 semanas, cada trimestre</li>
+        <li>Tasa del 24 % al 30 % anual</li>
+        <li>Un solo banco decide si te presta y a qué precio</li>
+        <li>La misma factura se puede financiar dos veces sin que nadie lo note</li>
+      </ul>
+    </div>
+    <div class="tarjeta despues">
+      <h3>Con nuestra solución</h3>
+      <ul>
+        <li>Aprobación en horas, con la factura ya confirmada por la armadora</li>
+        <li>Costo total cercano al 17 % anual</li>
+        <li>Varios inversionistas compiten por financiar la misma factura</li>
+        <li>El registro público impide que se financie dos veces</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- El simulador -->
+<section>
+  <p class="rotulo">Cómo funciona</p>
+  <h2>Recorre el flujo paso por paso</h2>
+
+  <div class="simulador">
+    <div class="barra"><i id="progreso"></i></div>
+    <div class="escenario">
+      <p class="paso-num" id="paso-num">Paso 1</p>
+      <p class="paso-actor" id="paso-actor"></p>
+      <p class="paso-detalle" id="paso-detalle"></p>
+      <span class="sello-onchain" id="sello" hidden>ocurre en Stellar</span>
+    </div>
+    <div class="controles">
+      <button id="btn-siguiente">Siguiente paso →</button>
+      <button id="btn-reiniciar" class="fantasma">Reiniciar</button>
+      <span id="contador" style="font-size:.86rem;color:var(--tinta-suave)"></span>
+    </div>
+  </div>
+</section>
+
+<!-- Por qué stellar -->
+<section>
+  <p class="rotulo">Por qué Stellar y no una base de datos</p>
+  <div class="cuadricula">
+    <div class="tarjeta">
+      <h3>Varias partes que no se confían</h3>
+      <p class="pie">Proveedor, armadora e inversionistas necesitan el mismo registro sin depender uno del otro.</p>
+    </div>
+    <div class="tarjeta">
+      <h3>Auditable por un tercero</h3>
+      <p class="pie">El inversionista verifica que esa factura no fue financiada antes, sin tener que creernos.</p>
+    </div>
+    <div class="tarjeta">
+      <h3>Cruza fronteras y monedas</h3>
+      <p class="pie">La armadora liquida en dólares y parte del capital viene de fuera de México.</p>
+    </div>
+    <div class="tarjeta">
+      <h3>Quita un intermediario caro</h3>
+      <p class="pie">Al entrar el pago de la armadora, el inversionista cobra solo: nadie concilia a mano.</p>
+    </div>
+  </div>
+</section>
+
+<!-- El negocio -->
+<section>
+  <p class="rotulo">El negocio</p>
+  <div class="cuadricula">
+    <div class="tarjeta">
+      <span class="dato">1.2 %</span>
+      <p class="pie">Comisión sobre el monto adelantado de cada factura.</p>
+    </div>
+    <div class="tarjeta">
+      <span class="dato">$2,700</span>
+      <p class="pie">Margen por factura de 500 mil pesos, ya descontado el costo del ancla.</p>
+    </div>
+    <div class="tarjeta">
+      <span class="dato">400</span>
+      <p class="pie">Proveedores alcanzables a través de CANACINTRA Bajío.</p>
+    </div>
+  </div>
+</section>
+
+<!-- El equipo -->
+<section>
+  <p class="rotulo">Equipo</p>
+  <div class="cuadricula">
+    <div class="tarjeta">
+      <h3>Nombre Apellido</h3>
+      <p class="pie">Carrera · <a href="https://github.com/usuario">@usuario</a></p>
+    </div>
+    <div class="tarjeta">
+      <h3>Nombre Apellido</h3>
+      <p class="pie">Carrera · <a href="https://github.com/usuario">@usuario</a></p>
+    </div>
+    <div class="tarjeta">
+      <h3>Nombre Apellido</h3>
+      <p class="pie">Carrera · <a href="https://github.com/usuario">@usuario</a></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>Ideathon Stellar × BAF × CANACINTRA</span>
+  <span>Equipo 00 (ejemplo) · <a href="../">ver los documentos de esta idea</a></span>
+</footer>
+
+</div>
+
+<script>
+</script>
+</body>
+</html>

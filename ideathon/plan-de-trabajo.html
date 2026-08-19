@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ideathon Stellar × BAF × CANACINTRA</title>
+<meta name="description" content="Plan de trabajo de la jornada de 8 horas: agenda, objetivos, evaluación e indicadores verificables.">
+<style>
+  :root {
+    /* Paleta: hoja de turno industrial — papel verde-gris, tinta grafito,
+       azul acero para estructura, rojo de sello para los registros (commits). */
+    --paper:        #E9EBE4;
+    --paper-raised: #F4F5F0;
+    --paper-sunk:   #DFE2D9;
+    --ink:          #171C1B;
+    --ink-soft:     #4A5250;
+    --ink-faint:    #717976;
+    --rule:         #C6CABE;
+    --rule-strong:  #A9AFA0;
+    --stamp:        #A8322B;
+    --stamp-wash:   rgba(168, 50, 43, 0.09);
+    --steel:        #2C4E5E;
+    --steel-soft:   #5F8494;
+    --steel-wash:   rgba(44, 78, 94, 0.08);
+
+    --font-display: "Arial Narrow", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-body:    Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+    --font-mono:    ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+    --measure: 68ch;
+    --gutter: clamp(1.25rem, 4vw, 3rem);
+  }
+
+  :root:not([data-theme="light"]) {
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:        #14181A;
+      --paper-raised: #1C2124;
+      --paper-sunk:   #0F1315;
+      --ink:          #E4E7E0;
+      --ink-soft:     #A2ABA6;
+      --ink-faint:    #7A837F;
+      --rule:         #2E3639;
+      --rule-strong:  #414B4E;
+      --stamp:        #E58077;
+      --stamp-wash:   rgba(229, 128, 119, 0.13);
+      --steel:        #8FB6C7;
+      --steel-soft:   #6D909F;
+      --steel-wash:   rgba(143, 182, 199, 0.11);
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:        #14181A;
+    --paper-raised: #1C2124;
+    --paper-sunk:   #0F1315;
+    --ink:          #E4E7E0;
+    --ink-soft:     #A2ABA6;
+    --ink-faint:    #7A837F;
+    --rule:         #2E3639;
+    --rule-strong:  #414B4E;
+    --stamp:        #E58077;
+    --stamp-wash:   rgba(229, 128, 119, 0.13);
+    --steel:        #8FB6C7;
+    --steel-soft:   #6D909F;
+    --steel-wash:   rgba(143, 182, 199, 0.11);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.62;
+    margin: 0;
+    padding: 0 var(--gutter) 5rem;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sheet {
+    max-width: 60rem;
+    margin: 0 auto;
+  }
+
+  /* ---------------------------------------------------------- tipografía */
+
+  h1, h2, h3, .eyebrow, .block-name, th {
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 7vw, 4.1rem);
+    line-height: 0.98;
+    letter-spacing: -0.005em;
+    text-transform: uppercase;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  h1 .x {
+    color: var(--stamp);
+    font-weight: 400;
+    padding: 0 0.1em;
+  }
+
+  h2 {
+    font-size: clamp(1.15rem, 2.4vw, 1.4rem);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  h3 {
+    font-size: 1.02rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin: 0 0 0.4rem;
+  }
+
+  p { margin: 0 0 1rem; max-width: var(--measure); }
+  p:last-child { margin-bottom: 0; }
+
+  a {
+    color: var(--steel);
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 1px;
+  }
+  a:focus-visible {
+    outline: 2px solid var(--stamp);
+    outline-offset: 3px;
+  }
+
+  strong { font-weight: 700; }
+
+  .eyebrow {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--stamp);
+    margin: 0;
+  }
+
+  .lede {
+    font-size: clamp(1.08rem, 2.1vw, 1.28rem);
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 46ch;
+  }
+
+  .mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ------------------------------------------------------------ cabecera */
+
+  header.head {
+    padding: clamp(2.5rem, 7vw, 4.5rem) 0 0;
+  }
+
+  .head-top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 0.6rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .head-top .mono {
+    font-size: 0.72rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .head-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: end;
+    padding-bottom: 2rem;
+  }
+
+  @media (max-width: 44rem) {
+    .head-body { grid-template-columns: 1fr; align-items: start; }
+  }
+
+  /* ficha técnica */
+  .spec {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+
+  .spec div {
+    background: var(--paper-raised);
+    padding: 0.7rem 0.85rem;
+  }
+
+  .spec dt {
+    font-family: var(--font-display);
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-faint);
+    margin: 0 0 0.18rem;
+  }
+
+  .spec dd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    line-height: 1.3;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* -------------------------------------------------------------- líneas */
+
+  section {
+    padding: clamp(2.5rem, 6vw, 3.75rem) 0 0;
+  }
+
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    border-top: 1px solid var(--rule-strong);
+    padding-top: 0.7rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .sec-head .num {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--stamp);
+    letter-spacing: 0.08em;
+    flex: none;
+  }
+
+  /* ------------------------------------------------------------- espinazo */
+
+  .flow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.4rem;
+    align-items: center;
+    margin-top: 1.5rem;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-size: 0.78rem;
+  }
+
+  .flow span {
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    padding: 0.32rem 0.6rem;
+  }
+
+  .flow span.end {
+    background: var(--stamp);
+    border-color: var(--stamp);
+    color: var(--paper-raised);
+  }
+
+  .flow i {
+    color: var(--ink-faint);
+    font-style: normal;
+  }
+
+  /* --------------------------------------------------------- cronograma */
+
+  .run { display: grid; gap: 0; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 0 1.5rem;
+    border-top: 1px solid var(--rule);
+    padding: 0.95rem 0;
+    position: relative;
+  }
+
+  .row:first-child { border-top: 1px solid var(--rule-strong); }
+
+  .row .when {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-soft);
+    letter-spacing: -0.01em;
+    padding-top: 0.15rem;
+    border-right: 1px solid var(--rule);
+    margin-right: -0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .row .when b {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    color: var(--stamp);
+    margin-bottom: 0.15rem;
+  }
+
+  .row.pause { background: var(--paper-sunk); }
+  .row.pause .body { color: var(--ink-faint); font-size: 0.9rem; }
+  .row.pause .when b { color: var(--ink-faint); }
+
+  .block-name {
+    font-size: 1.06rem;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+    margin: 0 0 0.3rem;
+    line-height: 1.2;
+  }
+
+  .row .body { min-width: 0; }
+  .row .body p { font-size: 0.95rem; margin-bottom: 0.55rem; }
+
+  .row ul {
+    margin: 0.1rem 0 0.6rem;
+    padding-left: 1.05rem;
+    font-size: 0.93rem;
+    color: var(--ink-soft);
+  }
+  .row ul li { margin-bottom: 0.28rem; }
+  .row ul li::marker { color: var(--steel-soft); }
+
+  /* sello de entregable = el commit */
+  .stamp {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--stamp);
+    background: var(--stamp-wash);
+    border: 1px dashed var(--stamp);
+    padding: 0.22rem 0.5rem;
+    margin-top: 0.15rem;
+  }
+
+  .stamp::before {
+    content: "commit";
+    font-family: var(--font-display);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    opacity: 0.75;
+  }
+
+  .stamp.wide { border-style: solid; }
+
+  @media (max-width: 34rem) {
+    .row { grid-template-columns: 1fr; gap: 0.4rem; }
+    .row .when {
+      border-right: none;
+      margin-right: 0;
+      padding-right: 0;
+      display: flex;
+      gap: 0.6rem;
+      align-items: baseline;
+    }
+    .row .when b { margin-bottom: 0; }
+  }
+
+  /* ------------------------------------------------------------- tablas */
+
+  .scroll { overflow-x: auto; }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 34rem;
+    font-size: 0.92rem;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    color: var(--ink-faint);
+    border-bottom: 1px solid var(--ink);
+    padding: 0 0.7rem 0.4rem 0;
+    vertical-align: bottom;
+  }
+
+  td {
+    border-bottom: 1px solid var(--rule);
+    padding: 0.55rem 0.7rem 0.55rem 0;
+    vertical-align: top;
+  }
+
+  td.id, td.goal {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+  td.id { color: var(--steel); }
+  td.goal { color: var(--stamp); font-weight: 700; }
+  td.pts {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* --------------------------------------------------------- dos columnas */
+
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+
+  .cols > div {
+    background: var(--paper);
+    padding: 1.1rem 1.15rem;
+  }
+
+  .cols h3 { color: var(--steel); }
+  .cols p { font-size: 0.93rem; color: var(--ink-soft); margin-bottom: 0; }
+
+  .level-tag {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--ink-faint);
+    display: block;
+    margin-bottom: 0.35rem;
+  }
+
+  /* lista de objetivos numerada */
+  ol.goals {
+    counter-reset: g;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.65rem;
+    max-width: var(--measure);
+  }
+
+  ol.goals li {
+    counter-increment: g;
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 0.6rem;
+    font-size: 0.96rem;
+  }
+
+  ol.goals li::before {
+    content: counter(g, decimal-leading-zero);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--steel-soft);
+    padding-top: 0.22rem;
+  }
+
+  /* nota al margen */
+  .note {
+    border-left: 3px solid var(--stamp);
+    background: var(--stamp-wash);
+    padding: 0.85rem 1rem;
+    margin: 1.5rem 0 0;
+    font-size: 0.94rem;
+    max-width: var(--measure);
+  }
+  .note p { margin-bottom: 0.5rem; }
+  .note p:last-child { margin-bottom: 0; }
+
+  .steelnote {
+    border-left: 3px solid var(--steel-soft);
+    background: var(--steel-wash);
+  }
+
+  /* premios */
+  .prizes {
+    display: grid;
+    gap: 0;
+    margin-top: 1.25rem;
+  }
+  .prizes div {
+    display: grid;
+    grid-template-columns: minmax(9rem, 14rem) 1fr;
+    gap: 0.5rem 1.25rem;
+    border-top: 1px solid var(--rule);
+    padding: 0.55rem 0;
+    font-size: 0.93rem;
+  }
+  .prizes div:last-child { border-bottom: 1px solid var(--rule); }
+  .prizes dt {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+  }
+  .prizes dd { margin: 0; color: var(--ink-soft); }
+  @media (max-width: 34rem) {
+    .prizes div { grid-template-columns: 1fr; }
+  }
+
+  footer {
+    margin-top: clamp(3rem, 7vw, 4.5rem);
+    border-top: 2px solid var(--ink);
+    padding-top: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--ink-faint);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header class="head">
+    <div class="head-top">
+      <span class="mono">Plan de trabajo · v1</span>
+      <span class="mono">Stellar Guide · Gerry Vela</span>
+    </div>
+
+    <div class="head-body">
+      <div>
+        <p class="eyebrow">Programa de un día</p>
+        <h1>Ideathon Stellar <span class="x">×</span> BAF <span class="x">×</span> CANACINTRA</h1>
+        <p class="lede" style="margin-top:1.1rem">
+          Ocho horas para convertir un problema real de la industria en una propuesta
+          ejecutable, publicarla como una demo en internet y registrarla, con autoría
+          y fecha, en un repositorio público.
+        </p>
+      </div>
+
+      <dl class="spec">
+        <div><dt>Duración</dt><dd>8 h efectivas<br>09:00 – 18:00</dd></div>
+        <div><dt>Audiencia</dt><dd>Estudiantes<br>universitarios</dd></div>
+        <div><dt>Equipos</dt><dd>3 – 5 personas</dd></div>
+        <div><dt>Capacidad</dt><dd>40 – 60<br>asistentes</dd></div>
+        <div style="grid-column: 1 / -1">
+          <dt>Resultado</dt>
+          <dd>Una contribución propia por asistente<br>Una demo publicada y un Pull Request por equipo</dd>
+        </div>
+      </dl>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head"><span class="num">01</span><h2>Enfoque del programa</h2></div>
+    <p>
+      El objetivo no es enseñar a programar en una jornada, sino desarrollar el criterio para
+      formular un problema de negocio, evaluar si justifica el uso de blockchain —y reconocer
+      los casos en que no lo justifica— y defender la propuesta ante un jurado.
+    </p>
+    <p>
+      GitHub cumple una doble función: es el espacio de trabajo de los equipos y el instrumento
+      de medición del programa. Cada bloque cierra con un archivo versionado, de modo que el
+      avance queda registrado con autoría y marca de tiempo. La evaluación se apoya en evidencia
+      verificable por cualquier tercero, no en la percepción de los organizadores.
+    </p>
+    <p>
+      La jornada cierra con un entregable operable: cada equipo publica una página con su
+      propuesta en GitHub Pages. Un solo archivo, editado en el navegador, sin instalaciones.
+      Es la vía más accesible para participantes sin experiencia en desarrollo, y frente al
+      jurado la diferencia entre exponer un documento y compartir una liga funcional es
+      sustancial.
+    </p>
+
+    <div class="flow">
+      <span>Dolor de industria</span><i>→</i>
+      <span>Cliente y problema</span><i>→</i>
+      <span>Patrón Stellar</span><i>→</i>
+      <span>Modelo de negocio</span><i>→</i>
+      <span>Demo publicada</span><i>→</i>
+      <span>Pitch</span><i>→</i>
+      <span class="end">Pull Request</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">02</span><h2>Objetivos de aprendizaje</h2></div>
+    <ol class="goals">
+      <li>Formular un problema de negocio en términos de cliente, dolor y costo cuantificado.</li>
+      <li>Evaluar si un problema justifica el uso de blockchain mediante un marco de cuatro criterios, y reconocer los casos en que no lo justifica.</li>
+      <li>Explicar el valor de Stellar en lenguaje de negocio: costo por transacción, tiempo de liquidación, activos digitales, anclas y estándares SEP.</li>
+      <li>Asociar un problema de industria con un patrón técnico del catálogo de casos de uso.</li>
+      <li>Construir un modelo de negocio mínimo: quién paga, cuánto y frente a qué alternativa existente.</li>
+      <li>Utilizar GitHub como herramienta de trabajo: cuenta, copia del repositorio, contribuciones, Pull Request y respuesta a una revisión, íntegramente desde el navegador.</li>
+      <li>Publicar una demo funcional en internet, con dirección propia, a partir de una plantilla.</li>
+      <li>Defender la propuesta en tres minutos con una estructura de presentación definida.</li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">03</span><h2>Cronograma</h2></div>
+
+    <div class="run">
+
+      <div class="row">
+        <div class="when"><b>B0</b>08:30<br>–09:00</div>
+        <div class="body">
+          <p class="block-name">Registro y check-in técnico</p>
+          <p>Verificación de que cada asistente tiene acceso operativo a GitHub antes de iniciar.
+             El requisito se comunica por correo con 72 horas de anticipación, junto con la guía
+             de inicio.</p>
+          <p>El registro captura el <span class="mono">usuario</span> de cada asistente, que es la
+             referencia con la que se construye el reporte de participación.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="when"><b>B1</b>09:00<br>–09:30</div>
+        <div class="body">
+          <p class="block-name">Apertura: el reto y las verticales</p>
+          <p>El reto: identificar un problema real de una empresa industrial mexicana y diseñar una
+             solución en la que Stellar aporte una capacidad que hoy no está disponible a costo o
+             velocidad razonables.</p>
+          <ul>
+            <li>Cinco verticales propuestas: pagos transfronterizos · liquidez y factoraje · trazabilidad de insumos · nómina y dispersión · lealtad y membresías B2B</li>
+            <li>Presentación de los criterios de evaluación y formación de equipos</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="when"><b>B2</b>09:30<br>–10:15</div>
+        <div class="body">
+          <p class="block-name">GitHub aplicado y primera contribución</p>
+          <p>Introducción práctica al flujo de trabajo colaborativo, íntegramente desde el
+             navegador: sin instalaciones, sin línea de comandos y sin configuración local. Cada
+             archivo guardado desde la interfaz web es una contribución real, atribuida a su autor.</p>
+          <p>Al cierre del bloque, todos los asistentes tienen una contribución registrada a su
+             nombre y los equipos están listos para trabajar.</p>
+          <span class="stamp wide">participantes/&lt;usuario&gt;.md</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="when"><b>B3</b>10:15<br>–11:15</div>
+        <div class="body">
+          <p class="block-name">Del problema al cliente</p>
+          <p>Estructura del problema: <em>[cliente específico] no puede [lograr algo] porque
+             [obstáculo], y eso le cuesta [tiempo, dinero o riesgo cuantificado]</em>. Cliente,
+             usuario y pagador son tres figuras distintas, y se exigen tres fuentes de evidencia.</p>
+          <ul>
+            <li>La alternativa actual —la hoja de cálculo, la transferencia bancaria, el intermediario— es el punto de comparación obligado</li>
+            <li>Validación cruzada entre equipos sobre la disposición real a pagar</li>
+          </ul>
+          <span class="stamp">01-problema.md</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="when"><b>B4</b>11:15<br>–12:15</div>
+        <div class="body">
+          <p class="block-name">Stellar y catálogo de casos de uso</p>
+          <p>Qué resuelve la red, en lenguaje de negocio: liquidación en segundos, costo por
+             transacción de fracciones de centavo, activos digitales, y las anclas y estándares SEP
+             como capa de conexión con el sistema financiero tradicional.</p>
+          <ul>
+            <li><strong>Marco de cuatro criterios:</strong> partes sin confianza mutua · auditabilidad por terceros · operación transfronteriza · eliminación de un intermediario costoso</li>
+            <li>Con menos de dos criterios cumplidos, la solución adecuada es una base de datos convencional; identificarlo se evalúa favorablemente</li>
+            <li>Catálogo problema → patrón, con contrato de referencia documentado para cada caso</li>
+          </ul>
+          <span class="stamp">02-caso-uso.md</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="when"><b>B5</b>12:15<br>–13:00</div>
+        <div class="body">
+          <p class="block-name">Modelo de negocio y unit economics</p>
+          <p>Quién paga, cuánto y frente a qué alternativa. El costo de red en Stellar es marginal;
+             el determinante está en la conversión a moneda local y en el cumplimiento normativo,
+             y omitirlo es la debilidad más frecuente en este tipo de propuestas.</p>
+          <ul>
+            <li>Dimensionamiento de mercado ascendente, con cifras defendibles línea por línea</li>
+            <li>Riesgo principal identificado explícitamente, con su mitigación</li>
+            <li>Primera empresa piloto concreta</li>
+          </ul>
+          <span class="stamp">03-modelo.md</span>
+        </div>
+      </div>
+
+      <div class="row pause">
+        <div class="when"><b>—</b>13:00<br>–13:45</div>
+        <div class="body">Comida</div>
+      </div>
+
+      <div class="row">
+        <div class="when"><b>B6</b>13:45<br>–15:45</div>
+        <div class="body">
+          <p class="block-name">Sprint de construcción de la demo</p>
+          <p>El bloque más extenso de la jornada: es donde la propuesta deja de ser un documento y
+             se vuelve un entregable operable. Todos los equipos parten de la misma plantilla,
+             documentada en español y con los puntos de edición señalados dentro del archivo.</p>
+          <ul>
+            <li><strong>N1 · Página propia</strong> — nombre de la propuesta, problema, cifras e identidad visual. Obligatorio.</li>
+            <li><strong>N2 · Demo interactiva</strong> — el recorrido de la solución reescrito con el flujo del equipo. Es edición de textos; no requiere programar.</li>
+            <li><strong>N3 · Integración con Stellar</strong> — la página consulta o ejecuta una operación real en la red de pruebas.</li>
+          </ul>
+          <span class="stamp wide">ideas/equipo-XX/demo/index.html</span>
+        </div>
+      </div>
+
+      <div class="row pause">
+        <div class="when"><b>—</b>15:45<br>–15:55</div>
+        <div class="body">Pausa</div>
+      </div>
+
+      <div class="row">
+        <div class="when"><b>B7</b>15:55<br>–16:40</div>
+        <div class="body">
+          <p class="block-name">Publicación, Pull Request y revisión</p>
+          <p>Cada equipo activa GitHub Pages y obtiene la dirección pública de su demo. A
+             continuación propone formalmente el entregable mediante un Pull Request, y cada mentor
+             plantea una observación concreta sobre la propuesta.</p>
+          <ul>
+            <li>Una integración continua verifica la estructura del entregable, los campos pendientes y la ausencia de credenciales expuestas</li>
+            <li>El equipo responde con una contribución de corrección, que queda registrada como parte de la evaluación</li>
+            <li>Para la mayoría de los asistentes es su primera revisión técnica en un entorno público</li>
+          </ul>
+          <span class="stamp wide">Demo publicada + Pull Request</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="when"><b>B8</b>16:40<br>–17:40</div>
+        <div class="body">
+          <p class="block-name">Presentaciones ante jurado</p>
+          <p>Tres minutos por equipo y dos de preguntas, con control de tiempo. Estructura definida:
+             problema cuantificado · cliente · solución y rol de Stellar · evidencia · modelo y
+             siguiente paso. Jurado de tres perfiles: viabilidad industrial, factibilidad técnica y
+             modelo de negocio.</p>
+          <span class="stamp">04-pitch.md</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="when"><b>B9</b>17:40<br>–18:00</div>
+        <div class="body">
+          <p class="block-name">Resultados, premiación y siguientes pasos</p>
+          <p>Presentación de resultados obtenidos del historial del repositorio, integración de los
+             entregables aprobados preservando la autoría individual, premiación por categorías y
+             ruta de continuidad para los equipos y asistentes interesados.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">04</span><h2>Los tres niveles de la demo</h2></div>
+    <div class="cols">
+      <div>
+        <span class="level-tag">N1 · obligatorio</span>
+        <h3>Su página</h3>
+        <p>La plantilla personalizada: nombre de la idea, el problema con sus cifras, el antes
+           y después, y su color de marca. Se edita en el navegador; los puntos a cambiar están
+           señalados dentro del archivo.</p>
+      </div>
+      <div>
+        <span class="level-tag">N2 · bonus</span>
+        <h3>Demo interactiva</h3>
+        <p>El simulador de la página recorre el flujo paso a paso. Reescribirlo con su propio
+           caso es editar una lista de textos — quién hace qué, y qué pasa en cada paso — sin
+           necesidad de saber programar.</p>
+      </div>
+      <div>
+        <span class="level-tag">N3 · bonus</span>
+        <h3>Conectada a Stellar</h3>
+        <p>La página consulta o ejecuta algo real en Testnet: un saldo, un pago, o un contrato
+           desplegado del catálogo. Para los equipos con perfil técnico.</p>
+      </div>
+    </div>
+    <div class="note steelnote">
+      <p><strong>Los tres niveles concluyen con la página publicada.</strong> N1 ya constituye una
+         página en línea con dirección propia; N2 y N3 amplían su funcionalidad. El nivel N1 permite
+         competir por todas las categorías salvo la de mejor uso de Stellar, lo que mantiene en
+         competencia a los equipos sin perfil técnico.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">05</span><h2>Cómo se mide</h2></div>
+    <p>
+      Los entregables residen en un repositorio público dedicado al evento. Los equipos trabajan
+      sobre su propia copia y proponen el resultado mediante un Pull Request, sin requerir permisos
+      de escritura. Al ser un repositorio exclusivo del programa, todo el historial corresponde a la
+      jornada y los indicadores se obtienen sin filtrado adicional.
+    </p>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Métrica</th><th>Qué demuestra</th><th>Meta</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="id">M1</td><td>Primera contribución individual</td><td>Cada persona contribuyó bajo su autoría</td><td class="goal">100 %</td></tr>
+          <tr><td class="id">M2</td><td>Copia de trabajo del equipo</td><td>El equipo se incorporó al flujo de trabajo</td><td class="goal">1 / equipo</td></tr>
+          <tr><td class="id">M3</td><td>Cuatro o más contribuciones por equipo</td><td>Trabajo distribuido a lo largo de la jornada</td><td class="goal">100 %</td></tr>
+          <tr><td class="id">M4</td><td>Pull Request abierto</td><td>Entregable propuesto formalmente</td><td class="goal">1 / equipo</td></tr>
+          <tr><td class="id">M5</td><td>Pull Request integrado</td><td>Entregable completo y aprobado</td><td class="goal">≥ 80 %</td></tr>
+          <tr><td class="id">M6</td><td>Contribución posterior a la revisión</td><td>Capacidad de iterar con retroalimentación</td><td class="goal">≥ 50 %</td></tr>
+          <tr><td class="id">M7</td><td>Demo publicada en GitHub Pages</td><td>Entregable operable, no únicamente documental</td><td class="goal">100 %</td></tr>
+          <tr><td class="id">M9</td><td>Evidencia en red de pruebas</td><td>Ejecución técnica real</td><td class="goal">≥ 30 %</td></tr>
+          <tr><td class="id">M8</td><td>Autores únicos con dos o más contribuciones</td><td>Participación efectiva de todo el equipo</td><td class="goal">≥ 60 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <p><strong>Preservación de la autoría individual.</strong> La integración de los Pull Requests
+         conserva cada contribución con su autor original. El repositorio está configurado para
+         admitir únicamente ese modo de integración, de forma que la trazabilidad por participante
+         queda garantizada.</p>
+    </div>
+
+    <p style="margin-top:1.5rem">
+      El reporte de cierre se construye a partir del historial de un repositorio público:
+      asistentes, cuentas activadas, contribuciones totales, autores únicos, Pull Requests abiertos
+      e integrados, demos publicadas con su dirección, y porcentaje de equipos con evidencia en la
+      red de pruebas. Es información auditable por cualquier tercero, no una encuesta de
+      satisfacción.
+    </p>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">06</span><h2>Evaluación y categorías</h2></div>
+    <p>
+      La calificación combina dos componentes independientes: la calidad de la propuesta, que
+      evalúa el jurado, y la ejecución, que se obtiene del historial del repositorio sin
+      intervención humana.
+    </p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Criterio</th><th>Qué se busca</th><th>Pts</th></tr></thead>
+        <tbody>
+          <tr><td>Problema y cliente</td><td>Formulación con costo cuantificado, cliente específico y tres fuentes de evidencia</td><td class="pts">20</td></tr>
+          <tr><td>Ajuste a Stellar</td><td>Marco de cuatro criterios justificado; delimita qué opera en cadena y qué no</td><td class="pts">20</td></tr>
+          <tr><td>Modelo de negocio</td><td>Quién paga y cuánto; unit economics que incorpora el costo de conversión</td><td class="pts">15</td></tr>
+          <tr><td>Demo y evidencia</td><td>La página publicada comunica la propuesta sin explicación adicional</td><td class="pts">10</td></tr>
+          <tr><td>Presentación</td><td>Se ajusta a los tres minutos y sostiene las preguntas del jurado</td><td class="pts">5</td></tr>
+          <tr><td><strong>Ejecución</strong></td><td>Autoría distribuida, contribuciones a lo largo de la jornada, entregable completo e iteración tras la revisión — automático</td><td class="pts"><strong>30</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <dl class="prizes">
+      <div><dt>Mejor propuesta general</dt><dd>Mayor puntaje total</dd></div>
+      <div><dt>Mejor problema</dt><dd>El problema mejor formulado y documentado</dd></div>
+      <div><dt>Mejor uso de Stellar</dt><dd>Criterio de ajuste técnico más evidencia en Testnet</dd></div>
+      <div><dt>Mejor demo</dt><dd>La página que mejor comunica la propuesta por sí sola</dd></div>
+      <div><dt>Mejor modelo de negocio</dt><dd>Con voto de CANACINTRA</dd></div>
+      <div><dt>Mejor ejecución</dt><dd>Únicamente historial del repositorio: el proceso de trabajo mejor sostenido</dd></div>
+    </dl>
+
+    <div class="note">
+      <p>La categoría de <strong>mejor ejecución</strong> responde a un criterio deliberado: separa la
+         calidad de la propuesta de la disciplina de trabajo, y reconoce al equipo que sostuvo un
+         proceso ordenado a lo largo de la jornada, que es la conducta que el formato busca
+         instalar.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">07</span><h2>Continuidad</h2></div>
+    <p>
+      Cada asistente conserva dos resultados públicos y verificables: su contribución en el
+      historial de un repositorio y una página en internet desarrollada con su equipo. Ambos
+      constituyen material de portafolio profesional. El repositorio del evento queda como catálogo
+      de propuestas disponible para las empresas asociadas a la cámara.
+    </p>
+    <p>
+      La ruta de profundización está definida: un programa de doce semanas sobre Stellar y contratos
+      Soroban, que reutiliza el mismo material de laboratorio empleado en la jornada.
+    </p>
+  </section>
+
+  <footer>
+    <span>Stellar Guide · Gerry Vela</span>
+    <span>Repo del evento: <span class="mono">github.com/MarxMad/Ideathon-Stellar-BAF-Canacintra</span></span>
+  </footer>
+
+</div>
+</body>
+</html>
