@@ -58,8 +58,8 @@ impl AmmContract {
             return Err(AmmError::InvalidAmount);
         }
         let (token_a, token_b) = Self::tokens(&env)?;
-        token::Client::new(&env, &token_a).transfer(&provider, &env.current_contract_address(), &amount_a);
-        token::Client::new(&env, &token_b).transfer(&provider, &env.current_contract_address(), &amount_b);
+        token::Client::new(&env, &token_a).transfer(&provider, env.current_contract_address(), &amount_a);
+        token::Client::new(&env, &token_b).transfer(&provider, env.current_contract_address(), &amount_b);
         let ra = Self::reserve(&env, &DataKey::ReserveA)?;
         let rb = Self::reserve(&env, &DataKey::ReserveB)?;
         env.storage().persistent().set(&DataKey::ReserveA, &(ra + amount_a));
@@ -83,7 +83,7 @@ impl AmmContract {
             return Err(AmmError::InvalidAmount);
         }
         let (token_a, token_b) = Self::tokens(&env)?;
-        token::Client::new(&env, &token_a).transfer(&trader, &env.current_contract_address(), &amount_in);
+        token::Client::new(&env, &token_a).transfer(&trader, env.current_contract_address(), &amount_in);
         token::Client::new(&env, &token_b).transfer(&env.current_contract_address(), &trader, &amount_out);
         env.storage().persistent().set(&DataKey::ReserveA, &(ra + amount_in));
         env.storage().persistent().set(&DataKey::ReserveB, &(rb - amount_out));

@@ -103,7 +103,7 @@ impl SavingsContract {
             .get(&DataKey::Token)
             .ok_or(SavingsError::NotInitialized)?;
         let token_client = token::Client::new(&env, &token_addr);
-        token_client.transfer(&from, &env.current_contract_address(), &amount);
+        token_client.transfer(&from, env.current_contract_address(), &amount);
 
         goal.balance += amount;
         env.storage().persistent().set(&DataKey::Goal(goal_id), &goal);

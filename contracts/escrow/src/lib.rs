@@ -58,7 +58,7 @@ impl EscrowContract {
             .ok_or(EscrowError::NotInitialized)?;
         token::Client::new(&env, &token_addr).transfer(
             &payer,
-            &env.current_contract_address(),
+            env.current_contract_address(),
             &amount,
         );
         let id: u64 = env

@@ -258,7 +258,7 @@ impl LoanContract {
         let token_addr = Self::token(env)?;
         token::Client::new(env, &token_addr).transfer(
             from,
-            &env.current_contract_address(),
+            env.current_contract_address(),
             &amount,
         );
         Ok(())

@@ -48,7 +48,7 @@ impl YieldVaultContract {
             .get(&DataKey::Token)
             .ok_or(YieldError::NotInitialized)?;
         let token_client = token::Client::new(&env, &token_addr);
-        token_client.transfer(&user, &env.current_contract_address(), &amount);
+        token_client.transfer(&user, env.current_contract_address(), &amount);
 
         let total_assets = Self::total_assets(&env)?;
         let total_shares = Self::total_shares(&env)?;
