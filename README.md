@@ -24,14 +24,18 @@ El curso reutiliza los `docs/`, `contracts/` y `examples/` de este repo como mat
 
 ## 💡 Ideathon de 1 día (formato evento)
 
-¿Necesitas un **evento corto** en lugar de un curso? En [`ideathon/`](ideathon/README.md) está el paquete
-completo para correr un ideathon de 8 horas orientado a negocio y casos de uso, donde cada equipo entrega
-su idea como Pull Request y la participación se mide con **commits reales**.
+¿Necesitas un **evento corto** en lugar de un curso? El programa completo de un ideathon de 8 horas
+—orientado a negocio y casos de uso, donde cada equipo publica una demo y la participación se mide
+con el historial del repositorio— vive en su propio repo:
 
-- **Temario de 8 h:** [ideathon/temario.md](ideathon/temario.md) · versión en página: [ideathon/plan-de-trabajo.html](ideathon/plan-de-trabajo.html)
-- **Cómo se mide (commits, PRs, leaderboard):** [ideathon/metricas.md](ideathon/metricas.md)
-- **Guía de GitHub para asistentes no técnicos:** [ideathon/guia-github-participantes.md](ideathon/guia-github-participantes.md)
-- **Semilla del repo del evento + scripts:** [ideathon/repo-participantes](ideathon/repo-participantes), [ideathon/scripts](ideathon/scripts)
+**[MarxMad/Ideathon-Stellar-BAF-Canacintra](https://github.com/MarxMad/Ideathon-Stellar-BAF-Canacintra)**
+
+- **Plan de trabajo:** [organizacion/temario.md](https://github.com/MarxMad/Ideathon-Stellar-BAF-Canacintra/blob/main/organizacion/temario.md) · [versión en página](https://marxmad.github.io/Ideathon-Stellar-BAF-Canacintra/plan-de-trabajo.html)
+- **Cómo se mide:** [organizacion/metricas.md](https://github.com/MarxMad/Ideathon-Stellar-BAF-Canacintra/blob/main/organizacion/metricas.md)
+- **Guía de GitHub para asistentes sin experiencia:** [guia-github.md](https://github.com/MarxMad/Ideathon-Stellar-BAF-Canacintra/blob/main/guia-github.md)
+
+Ese programa usa este repo como material de laboratorio: el catálogo de [`docs/contratos-casos-uso.md`](docs/contratos-casos-uso.md),
+los [`contracts/`](contracts) como patrones de referencia y [`frontend/`](frontend) para el nivel avanzado.
 
 **Presentaciones (HTML, tecla N = notas):**
 
@@ -177,7 +181,7 @@ Invoke y WASM (`wasm32v1-none`): [docs/comandos-basicos.md](docs/comandos-basico
 
 ## Frontend para probar contratos
 
-UI lista en [`frontend/`](frontend/README.md): abre `attendance.html` ya ligada a
+UI lista en [`frontend/`](frontend/README.md): la lista se lee sin wallet; Freighter firma. Abre `attendance.html` ligada a
 
 `CBQ2RV6RGJMGOJGJRMV6JFCYIVMBQNPDGUNW57I2YJCG2RQU5T7MD2BO`
 
