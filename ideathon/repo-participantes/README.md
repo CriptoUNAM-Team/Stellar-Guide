@@ -80,16 +80,16 @@ Detalle en [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Material de consulta
 
-Todo el material técnico y el catálogo de casos de uso está en **[Stellar-Guide](https://github.com/MarxMad/Stellar-Guide)**:
+Todo el material técnico y el catálogo de casos de uso está en **[Stellar-Guide](https://github.com/CriptoUNAM-Team/Stellar-Guide)**:
 
 | Necesitas… | Ve a |
 |---|---|
-| Casos de uso por industria, con contrato de referencia | [`docs/contratos-casos-uso.md`](https://github.com/MarxMad/Stellar-Guide/blob/main/docs/contratos-casos-uso.md) |
-| Combinaciones de extremo a extremo | [`docs/playbooks-producto.md`](https://github.com/MarxMad/Stellar-Guide/blob/main/docs/playbooks-producto.md) |
-| Qué son las anclas y los estándares SEP | [`docs/sep-estandares-anclas.md`](https://github.com/MarxMad/Stellar-Guide/blob/main/docs/sep-estandares-anclas.md) |
-| Tu primer pago en la red de pruebas (nivel N3) | [`exercises/01-pago-simple.md`](https://github.com/MarxMad/Stellar-Guide/blob/main/exercises/01-pago-simple.md) |
-| Interfaces conectadas a contratos (nivel N3) | [`docs/frontend-contratos.md`](https://github.com/MarxMad/Stellar-Guide/blob/main/docs/frontend-contratos.md) |
-| Cómo dibujar el diagrama de la solución | [`docs/flujos-mermaid.md`](https://github.com/MarxMad/Stellar-Guide/blob/main/docs/flujos-mermaid.md) |
+| Casos de uso por industria, con contrato de referencia | [`docs/contratos-casos-uso.md`](https://github.com/CriptoUNAM-Team/Stellar-Guide/blob/main/docs/contratos-casos-uso.md) |
+| Combinaciones de extremo a extremo | [`docs/playbooks-producto.md`](https://github.com/CriptoUNAM-Team/Stellar-Guide/blob/main/docs/playbooks-producto.md) |
+| Qué son las anclas y los estándares SEP | [`docs/sep-estandares-anclas.md`](https://github.com/CriptoUNAM-Team/Stellar-Guide/blob/main/docs/sep-estandares-anclas.md) |
+| Tu primer pago en la red de pruebas (nivel N3) | [`exercises/01-pago-simple.md`](https://github.com/CriptoUNAM-Team/Stellar-Guide/blob/main/exercises/01-pago-simple.md) |
+| Interfaces conectadas a contratos (nivel N3) | [`docs/frontend-contratos.md`](https://github.com/CriptoUNAM-Team/Stellar-Guide/blob/main/docs/frontend-contratos.md) |
+| Cómo dibujar el diagrama de la solución | [`docs/flujos-mermaid.md`](https://github.com/CriptoUNAM-Team/Stellar-Guide/blob/main/docs/flujos-mermaid.md) |
 
 ---
 
