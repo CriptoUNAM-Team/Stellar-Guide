@@ -3,7 +3,7 @@
 Aquí vive tu idea y aquí se registra tu participación.
 Todo se hace **desde el navegador**: no necesitas instalar nada ni saber programar.
 
-📄 [Programa completo de la jornada](plan-de-trabajo.html) · 📊 [Cómo se evalúa](rubrica.md)
+📄 [Programa completo de la jornada](https://marxmad.github.io/Ideathon-Stellar-BAF-Canacintra/plan-de-trabajo.html) · 📊 [Cómo se evalúa](rubrica.md)
 
 ---
 

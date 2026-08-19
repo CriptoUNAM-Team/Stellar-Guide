@@ -13,7 +13,7 @@ Material completo para correr un **ideathon de 1 día (8 h)** con estudiantes un
 | Si eres… | Lee |
 |---|---|
 | **Organizador** | [temario.md](temario.md) → [metricas.md](metricas.md) → [logistica.md](logistica.md) |
-| **Cliente / patrocinador** | [plan-de-trabajo.html](plan-de-trabajo.html) — el temario en formato presentable |
+| **Cliente / patrocinador** | El temario como página: [ábrela en línea](https://marxmad.github.io/Ideathon-Stellar-BAF-Canacintra/plan-de-trabajo.html) o abre `plan-de-trabajo.html` con doble clic |
 | **Facilitador / mentor** | [guia-facilitador.md](guia-facilitador.md) + [rubrica.md](rubrica.md) |
 | **Participante** | [guia-github-participantes.md](guia-github-participantes.md) |
 | **Jurado** | [rubrica.md](rubrica.md) |
@@ -25,7 +25,7 @@ Material completo para correr un **ideathon de 1 día (8 h)** con estudiantes un
 ```text
 ideathon/
 ├── temario.md                    ← agenda de 8 h, bloque por bloque, con contenidos
-├── plan-de-trabajo.html          ← el temario como página (ábrelo con doble clic)
+├── plan-de-trabajo.html          ← el temario como página (doble clic; desde GitHub se ve el código)
 ├── metricas.md                   ← qué se mide, cómo y con qué comando (el corazón del diseño)
 ├── rubrica.md                    ← evaluación del jurado + evaluación automática desde Git
 ├── logistica.md                  ← checklist T-2 semanas, T-72 h, día del evento y contingencias
