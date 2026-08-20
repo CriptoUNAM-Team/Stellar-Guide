@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Urna del grupo</title>
+<link rel="stylesheet" href="assets/estilo.css">
+<link rel="stylesheet" href="assets/app-aula.css">
+</head>
+<body class="aula">
+<div class="envoltura estrecha">
+  <header class="aula-top">
+    <a class="volver" href="index.html">← apps</a>
+    <div class="barra-cuenta">
+      <span class="chip red">Testnet</span>
+      <span class="pill-cuenta" id="pill-cuenta" hidden></span>
+      <button id="btn-freighter" class="primario" type="button">Conectar Freighter</button>
+    </div>
+  </header>
+
+  <section class="hero-aula">
+    <p class="kicker">Urna del grupo</p>
+    <h1>Un voto.<br>Una cuenta.</h1>
+    <p class="lead">El recuento se lee sin wallet. Para votar, Freighter firma. Esta página no pide tu <code>S…</code>.</p>
+  </section>
+
+  <div id="aviso" class="aviso-app" hidden></div>
+
+  <section class="card-aula tablero">
+    <div class="fila">
+      <input id="proposal-id" value="1" inputmode="numeric" placeholder="Nº de propuesta">
+      <button id="btn-ver" type="button">Ver</button>
+    </div>
+    <div id="panel-prop" style="margin-top:16px"><p class="vacio">Cargando…</p></div>
+    <div class="votos">
+      <button id="btn-si" class="voto-btn si" type="button" disabled>A favor</button>
+      <button id="btn-no" class="voto-btn no" type="button" disabled>En contra</button>
+    </div>
+    <p class="ayuda mini" id="ayuda-voto">Conecta Freighter para emitir tu voto.</p>
+  </section>
+
+  <section class="card-aula profe" id="vista-profe" hidden>
+    <h2>Nueva pregunta</h2>
+    <p class="ayuda">Lo firma el admin del contrato.</p>
+    <input id="titulo" placeholder="¿Hacemos el laboratorio en Testnet?" style="width:100%">
+    <button id="btn-crear" class="primario" type="button" style="margin-top:12px">Publicar propuesta</button>
+  </section>
+
+  <details class="tecnico">
+    <summary>Cómo firmar</summary>
+    <p class="ayuda">Freighter en Testnet, o en la terminal: <code>stellar contract invoke --source alumno -- vote …</code></p>
+  </details>
+
+  <details class="tecnico">
+    <summary>Contrato en Testnet</summary>
+    <div class="fila">
+      <input id="campo-id" spellcheck="false">
+      <button id="btn-guardar-id" type="button">Guardar ID</button>
+    </div>
+  </details>
+</div>
+<script src="assets/datos.js"></script>
+<script src="assets/ids.js"></script>
+<script type="module" src="assets/votacion.js"></script>
+</body>
+</html>

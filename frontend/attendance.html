@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lista de clase</title>
+<link rel="stylesheet" href="assets/estilo.css">
+<link rel="stylesheet" href="assets/app-aula.css">
+</head>
+<body class="aula">
+<div class="envoltura estrecha">
+
+  <header class="aula-top">
+    <a class="volver" href="index.html">← apps</a>
+    <div class="barra-cuenta">
+      <span class="chip red">Testnet</span>
+      <span class="pill-cuenta" id="pill-cuenta" hidden></span>
+      <button id="btn-freighter" class="primario" type="button">Conectar Freighter</button>
+    </div>
+  </header>
+
+  <section class="hero-aula">
+    <p class="kicker">Lista de clase</p>
+    <h1>Hoy pasan lista<br>en Stellar.</h1>
+    <p class="lead">La lista es pública. Para quedar en ella, Freighter firma. Esta página nunca ve tu clave <code>S…</code>.</p>
+  </section>
+
+  <div id="aviso" class="aviso-app" hidden></div>
+
+  <section class="card-aula tablero" id="vista-sesion">
+    <div id="panel-clase"><p class="vacio">Cargando la sesión…</p></div>
+    <div id="accion" class="accion-aula"></div>
+  </section>
+
+  <section class="card-aula" id="vista-profe" hidden>
+    <h2>Abrir la clase de hoy</h2>
+    <p class="ayuda">Lo firma la cuenta admin. Después, cada alumno firma su propio presente.</p>
+    <div class="fila">
+      <input id="curso" value="Capacitación Stellar">
+      <input id="tema" value="Sesión 2 · pasar lista">
+    </div>
+    <button id="btn-abrir" class="primario" type="button" style="margin-top:12px">Abrir sesión</button>
+  </section>
+
+  <section class="card-aula" id="vista-lista">
+    <h2>Quién ya está</h2>
+    <ul class="roster" id="roster"><li class="vacio">Cargando…</li></ul>
+  </section>
+
+  <details class="tecnico">
+    <summary>Cómo firmar (Freighter o terminal)</summary>
+    <ol class="pasos-firma">
+      <li>Instala <a href="https://www.freighter.app/" target="_blank" rel="noreferrer">Freighter</a> y elige red <strong>Testnet</strong>.</li>
+      <li>Importa <code>profe</code> o <code>alumno</code> <em>dentro</em> de la extensión, no en esta web.</li>
+      <li>Abre esta página en <code>http://localhost</code> (Freighter no firma en <code>file://</code>).</li>
+    </ol>
+    <p class="ayuda">Sin extensión, la CLI firma igual de bien:</p>
+    <pre class="cmd" id="cmd-cli">stellar contract invoke --source alumno -- mark_present …</pre>
+  </details>
+
+  <details class="tecnico">
+    <summary>Contrato en Testnet</summary>
+    <div class="fila">
+      <input id="campo-id" spellcheck="false">
+      <button id="btn-guardar-id" type="button">Guardar ID</button>
+    </div>
+  </details>
+
+</div>
+<script src="assets/datos.js"></script>
+<script src="assets/ids.js"></script>
+<script type="module" src="assets/asistencia.js"></script>
+</body>
+</html>

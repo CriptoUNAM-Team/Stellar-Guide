@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boleta</title>
+<link rel="stylesheet" href="assets/estilo.css">
+<link rel="stylesheet" href="assets/app-aula.css">
+</head>
+<body class="aula">
+<div class="envoltura estrecha">
+  <header class="aula-top">
+    <a class="volver" href="index.html">← apps</a>
+    <div class="barra-cuenta">
+      <span class="chip red">Testnet</span>
+      <span class="pill-cuenta" id="pill-cuenta" hidden></span>
+      <button id="btn-freighter" class="primario" type="button">Conectar Freighter</button>
+    </div>
+  </header>
+
+  <section class="hero-aula">
+    <p class="kicker">Boleta</p>
+    <h1>La nota no se edita<br>en un Excel.</h1>
+    <p class="lead">Consultar es lectura. Publicar lo firma el admin. Esta página no pide tu <code>S…</code>.</p>
+  </section>
+
+  <div id="aviso" class="aviso-app" hidden></div>
+
+  <section class="card-aula tablero">
+    <h2>Consultar calificación</h2>
+    <div class="fila">
+      <input id="alumno-ver" placeholder="G… del alumno">
+      <button id="usar-mia" type="button">Mi cuenta</button>
+    </div>
+    <div class="fila" style="margin-top:10px">
+      <input id="tarea-ver" placeholder="Actividad (ej. Lab-1)">
+      <button id="btn-ver" class="primario" type="button">Ver boleta</button>
+    </div>
+    <div id="boleta" style="margin-top:16px"></div>
+  </section>
+
+  <section class="card-aula profe" id="vista-profe" hidden>
+    <h2>Publicar nota</h2>
+    <p class="ayuda">Lo firma el admin. El alumno solo consulta.</p>
+    <input id="alumno" placeholder="G… del alumno" style="width:100%;margin-bottom:8px">
+    <input id="tarea" placeholder="Actividad" style="width:100%;margin-bottom:8px">
+    <div class="fila">
+      <input id="score" inputmode="numeric" placeholder="Puntos">
+      <input id="max" inputmode="numeric" value="100" placeholder="Máximo">
+    </div>
+    <button id="btn-registrar" class="primario" type="button" style="margin-top:12px">Publicar nota</button>
+  </section>
+
+  <details class="tecnico">
+    <summary>Cómo firmar</summary>
+    <p class="ayuda">Freighter en Testnet. Consultar no requiere firma. Publicar sí: cuenta admin.</p>
+  </details>
+
+  <details class="tecnico">
+    <summary>Contrato en Testnet</summary>
+    <div class="fila">
+      <input id="campo-id" spellcheck="false">
+      <button id="btn-guardar-id" type="button">Guardar ID</button>
+    </div>
+  </details>
+</div>
+<script src="assets/datos.js"></script>
+<script src="assets/ids.js"></script>
+<script type="module" src="assets/notas.js"></script>
+</body>
+</html>

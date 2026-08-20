@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Préstamo colateral — Stellar Guide</title>
+<link rel="stylesheet" href="assets/estilo.css">
+</head>
+<body>
+<div class="envoltura">
+
+  <header class="principal">
+    <a class="volver" href="index.html">← todos los contratos</a>
+    <h1 id="nombre-contrato">Préstamo colateral</h1>
+    <p class="sub" id="desc-contrato">Colateral, deuda, ratio mínimo y liquidación.</p>
+    <div class="meta">
+      <span class="chip red">testnet</span>
+      <span class="chip">contracts/loan</span>
+      <span class="chip" id="chip-estado">…</span>
+      <button class="id-contrato" id="id-contrato" type="button">…</button>
+      <a class="volver" id="ver-explorer" target="_blank" rel="noopener">ver en Stellar Expert ↗</a>
+    </div>
+  </header>
+
+  <section class="identidad">
+    <h2>Contract ID (Testnet)</h2>
+    <p class="ayuda">Pega el <code>C…</code> de <code>stellar contract deploy</code>. Si redeployas, reemplázalo y pulsa guardar.</p>
+    <div class="fila">
+      <input id="campo-id" spellcheck="false" autocomplete="off">
+      <button id="btn-guardar-id" class="primario" type="button">Guardar ID</button>
+      <button id="btn-restaurar-id" type="button">Default del repo</button>
+    </div>
+  </section>
+
+  <section class="identidad">
+    <h2>Cuenta para firmar</h2>
+    <p class="ayuda">
+      Las funciones de <em>lectura</em> no necesitan cuenta. Para <em>escribir</em> hay que firmar.
+      El admin de estos contratos es <code>profe</code>.
+    </p>
+    <div class="fila">
+      <button id="btn-freighter">Conectar Freighter</button>
+    </div>
+    <div class="fila" style="margin-top:10px">
+      <input id="clave-secreta" type="password" placeholder="…o pega una clave secreta S… (solo testnet)">
+      <button id="btn-secreta">Usar clave</button>
+    </div>
+    <div class="estado-cuenta" id="estado-cuenta"></div>
+  </section>
+
+  <div id="funciones"></div>
+
+</div>
+
+<script>window.CONTRATO = "loan";</script>
+<script src="assets/datos.js"></script>
+<script src="assets/ids.js"></script>
+<script type="module" src="assets/app.js"></script>
+</body>
+</html>

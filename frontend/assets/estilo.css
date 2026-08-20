@@ -1,0 +1,210 @@
+:root {
+  --bg: #0d1117;
+  --panel: #161b22;
+  --panel-2: #1c2330;
+  --borde: #30363d;
+  --texto: #e6edf3;
+  --suave: #8b949e;
+  --acento: #58a6ff;
+  --ok: #3fb950;
+  --error: #f85149;
+  --aviso: #d29922;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--texto);
+  font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+
+.envoltura { max-width: 1000px; margin: 0 auto; padding: 24px 20px 80px; }
+
+/* ---------- cabecera ---------- */
+header.principal {
+  border-bottom: 1px solid var(--borde);
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+header.principal h1 { margin: 0 0 4px; font-size: 26px; }
+header.principal .sub { color: var(--suave); margin: 0 0 12px; }
+.volver { color: var(--acento); text-decoration: none; font-size: 14px; }
+.volver:hover { text-decoration: underline; }
+
+.meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+.chip {
+  background: var(--panel-2);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: var(--suave);
+}
+.chip.ok { color: var(--ok); border-color: #16301c; }
+.chip.red { color: var(--aviso); border-color: #3d2f10; }
+.fila-campo { margin-top: 6px; }
+button.mini {
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--acento);
+}
+.ayuda-fn { color: var(--suave); font-size: 13px; margin: 12px 0 0; }
+.id-contrato {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--panel-2);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  color: var(--texto);
+  word-break: break-all;
+  text-align: left;
+}
+.id-contrato:hover { border-color: var(--acento); }
+
+/* ---------- identidad ---------- */
+.identidad {
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+.identidad h2 { margin: 0 0 4px; font-size: 15px; }
+.identidad .ayuda { color: var(--suave); font-size: 13px; margin: 0 0 12px; }
+.fila { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.fila input { flex: 1; min-width: 260px; }
+
+input, select {
+  background: var(--bg);
+  border: 1px solid var(--borde);
+  color: var(--texto);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-family: inherit;
+}
+input:focus, select:focus { outline: none; border-color: var(--acento); }
+input[type="checkbox"] { width: auto; min-width: 0; }
+
+button {
+  background: var(--panel-2);
+  border: 1px solid var(--borde);
+  color: var(--texto);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: var(--acento); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+button.primario { background: #1f6feb; border-color: #1f6feb; color: #fff; }
+button.primario:hover:not(:disabled) { background: #2b7cf3; }
+button.peligro { border-color: #5c2b28; color: #ff9d96; }
+
+.estado-cuenta { margin-top: 12px; font-size: 13px; font-family: var(--mono); color: var(--suave); word-break: break-all; }
+.estado-cuenta strong { color: var(--ok); }
+
+/* ---------- funciones ---------- */
+h2.seccion {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--suave);
+  margin: 28px 0 12px;
+  font-weight: 600;
+}
+
+.funcion {
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.funcion > summary {
+  padding: 14px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  list-style: none;
+  user-select: none;
+}
+.funcion > summary::-webkit-details-marker { display: none; }
+.funcion > summary::before { content: "▸"; color: var(--suave); font-size: 12px; }
+.funcion[open] > summary::before { content: "▾"; }
+.funcion > summary:hover { background: var(--panel-2); }
+.nombre-fn { font-family: var(--mono); font-size: 14px; font-weight: 600; }
+.firma { color: var(--suave); font-size: 12px; font-family: var(--mono); }
+.etiqueta {
+  margin-left: auto;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--borde);
+  color: var(--suave);
+}
+.etiqueta.escritura { color: var(--aviso); border-color: #3d2f10; }
+.etiqueta.lectura { color: var(--ok); border-color: #16301c; }
+
+.cuerpo-fn { padding: 0 16px 16px; border-top: 1px solid var(--borde); }
+.campo { margin-top: 12px; }
+.campo label { display: block; font-size: 13px; margin-bottom: 4px; }
+.campo label .tipo { color: var(--suave); font-family: var(--mono); font-size: 11px; margin-left: 6px; }
+.campo input, .campo select { width: 100%; }
+.acciones { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+.salida {
+  margin-top: 14px;
+  background: var(--bg);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 12px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 320px;
+  overflow: auto;
+}
+.salida.ok { border-color: #16301c; }
+.salida.error { border-color: #5c2b28; color: #ff9d96; }
+.salida:empty { display: none; }
+
+/* ---------- indice ---------- */
+.rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.tarjeta {
+  display: block;
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 16px;
+  text-decoration: none;
+  color: inherit;
+}
+.tarjeta:hover { border-color: var(--acento); }
+.tarjeta h3 { margin: 0 0 6px; font-size: 16px; }
+.tarjeta p { margin: 0 0 10px; color: var(--suave); font-size: 13px; }
+.tarjeta .cid { font-family: var(--mono); font-size: 11px; color: var(--suave); word-break: break-all; }
+
+.nota {
+  background: #1c1a10;
+  border: 1px solid #3d2f10;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #e3c07b;
+  margin-bottom: 20px;
+}
+.nota code { font-family: var(--mono); }
+
+@media (max-width: 600px) {
+  .fila input { min-width: 100%; }
+  .envoltura { padding: 16px 14px 60px; }
+}

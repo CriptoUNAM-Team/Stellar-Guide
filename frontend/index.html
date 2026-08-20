@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apps del taller — Stellar Guide</title>
+<link rel="stylesheet" href="assets/estilo.css">
+<link rel="stylesheet" href="assets/app-aula.css">
+</head>
+<body class="aula">
+<div class="envoltura">
+
+  <header class="principal">
+    <h1>Apps del taller</h1>
+    <p class="sub">
+      Las tres de clase se leen sin wallet. Para escribir en Testnet, Freighter firma.
+      Esta web no pide ni guarda claves <code>S…</code>.
+    </p>
+  </header>
+
+  <section class="apps-clase">
+    <p class="kicker">Clase</p>
+    <p class="lead">Abre la lista con el grupo. El tablero se actualiza solo. Conectar es opcional hasta que alguien tenga que firmar.</p>
+    <div class="rejilla">
+      <a class="tarjeta destacada" href="attendance.html">
+        <span class="tag-app">En vivo</span>
+        <h3>Lista de clase</h3>
+        <p>El admin abre sesión. Cada alumno firma presente. El roster es público.</p>
+      </a>
+      <a class="tarjeta destacada" href="voting.html">
+        <span class="tag-app">Urna</span>
+        <h3>Votación</h3>
+        <p>El recuento se consulta. Un address, un voto. Freighter firma el voto.</p>
+      </a>
+      <a class="tarjeta destacada" href="grades.html">
+        <span class="tag-app">Boleta</span>
+        <h3>Calificaciones</h3>
+        <p>Consultar no requiere firma. Publicar la nota sí: cuenta admin.</p>
+      </a>
+    </div>
+  </section>
+
+  <p class="kicker">Exploradores</p>
+  <p class="sub" style="margin-top:0">Formularios por función, para el resto de contratos.</p>
+  <div id="catalogo"></div>
+
+</div>
+<script src="assets/datos.js"></script>
+<script src="assets/ids.js"></script>
+<script src="assets/index.js"></script>
+</body>
+</html>
